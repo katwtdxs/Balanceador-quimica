@@ -1,7 +1,7 @@
 #Función realizada por Karen González
 
 """
-    Para expresar más informaciónd del balanceo tambien calculamos la masa molar de los compuestos
+    Para expresar más información del balanceo tambien calculamos la masa molar de los compuestos
     tanto de los reactivos y de los productos
 """
 
@@ -35,10 +35,9 @@ masa_molar_elementos ={
     "Md": 258.000, "No": 259.000, "Lr": 262.000
     }
  
-def calcular_masa_molar(sustancia):
-    elementos = conocer_cantidad_moles(sustancia)
-    masa = 0
-    for simbolo, cantidad in elementos.items():
-        átomo = element(simbolo)        # busca el elemento por su símbolo
-        masa += átomo.atomic_weight * cantidad
-    return round(masa, 3)
+def calculo_masa_molar(compuesto):
+    elementos = conocer_cantidad_moles(compuesto) #Con la función de calculo de moles de las sustancias sacamos esos valores
+    masa = 0 #Iniciamos un contador para la masa
+    for simbolo, cantidad in elementos.items(): #Se abre un bucle para recorrer los elementos del compuesto 
+        masa += masa_molar_elementos[simbolo] * cantidad #A la masa se le añade el valor de la masa del elemento multiplicado por los moles presentes
+    return round(masa, 3) # Se devuelve el valor de la masa redondeado con 3 decimales
