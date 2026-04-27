@@ -499,3 +499,104 @@ def calculo_masa_molar(compuesto):
     
     return round(masa, 3) # Se devuelve el valor de la masa redondeado con 3 decimales
 
+
+# HISTORIAL EN TXT 
+# Función realizada por Lizeth Sastoque
+
+ARCHIVO_HISTORIAL = "historial.txt"
+
+
+def guardar_en_historial(ecuacion, balanceada, tipo, masas):
+    """
+    Guarda los resultados en un archivo .txt de forma legible
+    """
+
+    with open(ARCHIVO_HISTORIAL, "a", encoding="utf-8") as archivo:
+        archivo.write("=====================================\n")
+        archivo.write(f"Ecuación: {ecuacion}\n")
+        archivo.write(f"Balanceada: {balanceada}\n")
+        archivo.write(f"Tipo de reacción: {tipo}\n")
+        archivo.write("Masas molares:\n")
+
+        for comp, masa in masas.items():
+            archivo.write(f"  {comp}: {masa} g/mol\n")
+
+        archivo.write("=====================================\n\n")
+
+
+import streamlit as st
+import os
+
+
+#  INTERFAZ 
+
+st.set_page_config(page_title="Balanceador Químico", page_icon="🧪")
+
+st.title("🧪 Balanceador de Ecuaciones Químicas")
+st.write("Ingresa una ecuación química para analizarla")
+
+ecuacion = st.text_input("Ejemplo: H2 + O2 = H2O")
+
+if st.button("🔍 Analizar"):
+
+    if ecuacion.strip() == "":
+        st.warning("Por favor ingresa una ecuación")
+    else:
+        try:
+#  SEPARAR 
+            reactivos, productos = Separar_ecuacion(ecuacion)
+
+ # BALANCEAR 
+            coeficientes, compuestos, _, _, _ = calcular_coeficientes(reactivos, productos)
+
+# Construir ecuación balanceada
+            ecuacion_balanceada = ""
+            for i, comp in enumerate(compuestos):
+                coef = coeficientes[i]
+
+                if coef != 1:
+                    ecuacion_balanceada += f"{coef}{comp}"
+                else:
+                    ecuacion_balanceada += comp
+
+                if i == len(reactivos) - 1:
+                    ecuacion_balanceada += " = "
+                elif i < len(compuestos) - 1:
+                    ecuacion_balanceada += " + "
+
+            st.subheader(" Ecuación balanceada")
+            st.success(ecuacion_balanceada)
+ #  TIPO DE REACCIÓN 
+            tipo = clasificar_reaccion(ecuacion)
+
+            st.subheader(" Tipo de reacción")
+            st.info(tipo)
+
+ # MASA MOLAR 
+            st.subheader(" Masas molares")
+
+            masas = {}
+            for comp in compuestos:
+                masa = calculo_masa_molar(comp)
+                masas[comp] = masa
+                st.write(f"{comp}: {masa} g/mol")
+
+#  GUARDAR HISTORIAL
+            guardar_en_historial(
+                ecuacion,
+                ecuacion_balanceada,
+                tipo,
+                masas
+            )
+
+        except Exception as e:
+            st.error(f"Error: {e}")
+
+
+#  HISTORIAL
+
+st.markdown("---")
+st.header(" Historial")
+
+mostrar_historial()
+exportar_historial()
