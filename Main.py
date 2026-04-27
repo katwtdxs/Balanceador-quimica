@@ -229,5 +229,220 @@ def mostrar_conteo(compuesto):
     for elemento, cantidad in conteo.items():
         print(f"{elemento}: {cantidad}")
 
+# CALCULO MATRICES 
+# Función por Santiago Hernandez 
+
+# Import necesario para usar el traductor
+from Traductor import conocer_cantidad_moles
+
+
+def construir_matriz(reactivos, productos):
+
+    """
+    Construye la matriz de reacción a partir de las listas de reactivos y productos.
+
+    Utiliza la función conocer_cantidad_moles() de Traductor.py para obtener
+    el conteo de átomos de cada compuesto.
+
+    Parámetros:
+        reactivos (list): Lista de strings con los compuestos reactivos.
+        productos (list): Lista de strings con los compuestos productos.
+
+    Retorna:
+        matriz (list of list): Matriz de reacción como lista de listas de floats.
+        elementos (list): Lista ordenada de los elementos químicos presentes.
+        compuestos (list): Lista ordenada de todos los compuestos (reactivos + productos).
+    """
+    conteos_reactivos = [conocer_cantidad_moles(r) for r in reactivos]
+    conteos_productos = [conocer_cantidad_moles(p) for p in productos]
+
+    conjunto_elementos = set()
+    for conteo in conteos_reactivos + conteos_productos:
+        conjunto_elementos.update(conteo.keys())
+
+    elementos = sorted(conjunto_elementos)
+    compuestos = reactivos + productos
+
+    matriz = []
+    for elemento in elementos:
+        fila = []
+        for conteo in conteos_reactivos:
+            fila.append(float(conteo.get(elemento, 0)))
+        for conteo in conteos_productos:
+            fila.append(-float(conteo.get(elemento, 0)))
+        matriz.append(fila)
+
+    return matriz, elementos, compuestos
+
+
+def gauss_jordan(matriz):
+
+    """
+    Aplica el método de eliminación de Gauss-Jordán a la matriz dada.
+    """
+    matriz = [fila[:] for fila in matriz]
+    num_filas = len(matriz)
+    num_cols = len(matriz[0]) if matriz else 0  # ajuste de seguridad
+
+    fila_pivote = 0
+
+    for col in range(num_cols):
+        fila_no_cero = None
+        for fila in range(fila_pivote, num_filas):
+            if abs(matriz[fila][col]) > 1e-9:
+                fila_no_cero = fila
+                break
+
+        if fila_no_cero is None:
+            continue
+
+        matriz[fila_pivote], matriz[fila_no_cero] = matriz[fila_no_cero], matriz[fila_pivote]
+
+        pivote = matriz[fila_pivote][col]
+        matriz[fila_pivote] = [x / pivote for x in matriz[fila_pivote]]
+
+        for fila in range(num_filas):
+            if fila != fila_pivote and abs(matriz[fila][col]) > 1e-9:
+                factor = matriz[fila][col]
+                matriz[fila] = [
+                    matriz[fila][j] - factor * matriz[fila_pivote][j]
+                    for j in range(num_cols)
+                ]
+
+        fila_pivote += 1
+
+    return matriz
+
+
+def extraer_coeficientes(matriz_rref, num_compuestos):
+
+    """
+    Extrae los coeficientes estequiométricos a partir de la matriz RREF.
+    """
+    coeficientes = [0.0] * num_compuestos
+    coeficientes[num_compuestos - 1] = 1.0
+
+    for fila in reversed(matriz_rref):
+        col_pivote = None
+        for j in range(num_compuestos):
+            if abs(fila[j]) > 1e-9:
+                col_pivote = j
+                break
+
+        if col_pivote is None:
+            continue
+
+        valor = 0.0
+        for j in range(num_compuestos):
+            if j != col_pivote:
+                valor -= fila[j] * coeficientes[j]
+        coeficientes[col_pivote] = valor
+
+    return coeficientes
+
+
+def minimo_comun_multiplo(a, b):
+    from math import gcd
+    return abs(a * b) // gcd(a, b)
+
+
+def racionalizar_coeficientes(coeficientes, tolerancia=1e-6, max_denominador=1000):
+
+    """
+    Convierte los coeficientes de punto flotante en números enteros positivos.
+    """
+    from math import gcd
+
+    denominadores = []
+
+    for c in coeficientes:
+        mejor_error = float('inf')
+        mejor_denominador = 1
+
+        for q in range(1, max_denominador + 1):
+            p = round(c * q)
+            error = abs(c - p / q)
+            if error < mejor_error:
+                mejor_error = error
+                mejor_denominador = q
+            if error < tolerancia:
+                break
+
+        denominadores.append(mejor_denominador)
+
+    mcm = denominadores[0]
+    for d in denominadores[1:]:
+        mcm = minimo_comun_multiplo(mcm, d)
+
+    enteros = [abs(round(c * mcm)) for c in coeficientes]
+
+    mcd_total = enteros[0]
+    for e in enteros[1:]:
+        mcd_total = gcd(mcd_total, e)
+
+    if mcd_total > 1:
+        enteros = [e // mcd_total for e in enteros]
+
+    return enteros
+
+
+def calcular_coeficientes(reactivos, productos):
+
+    matriz_original, elementos, compuestos = construir_matriz(reactivos, productos)
+    matriz_rref = gauss_jordan(matriz_original)
+
+    num_compuestos = len(compuestos)
+    coeficientes_float = extraer_coeficientes(matriz_rref, num_compuestos)
+
+    coeficientes_enteros = racionalizar_coeficientes(coeficientes_float)
+
+    return coeficientes_enteros, compuestos, matriz_original, matriz_rref, elementos
+
+
+def imprimir_matriz(matriz, elementos, compuestos, titulo="Matriz"):
+
+    ancho_col = 10
+
+    print(f"\n{'='*60}")
+    print(f"  {titulo}")
+    print(f"{'='*60}")
+
+    encabezado = f"{'Elem':>6} |"
+    for comp in compuestos:
+        encabezado += f"{comp:>{ancho_col}}"
+    print(encabezado)
+    print(f"{'-'*6}-+{'-'*ancho_col*len(compuestos)}")
+
+    for i, elemento in enumerate(elementos):
+        fila_str = f"{elemento:>6} |"
+        for val in matriz[i]:
+            fila_str += f"{val:>{ancho_col}.3f}"
+        print(fila_str)
+
+    print(f"{'='*60}\n")
+
+
+# -------- FUNCIÓN EXTRA PARA STREAMLIT --------
+
+def matriz_a_texto(matriz, elementos, compuestos):
+    """
+    Convierte la matriz en texto para mostrar en Streamlit
+    """
+    texto = ""
+    ancho_col = 10
+
+    encabezado = f"{'Elem':>6} |"
+    for comp in compuestos:
+        encabezado += f"{comp:>{ancho_col}}"
+    texto += encabezado + "\n"
+    texto += f"{'-'*6}-+{'-'*ancho_col*len(compuestos)}\n"
+
+    for i, elemento in enumerate(elementos):
+        fila_str = f"{elemento:>6} |"
+        for val in matriz[i]:
+            fila_str += f"{val:>{ancho_col}.3f}"
+        texto += fila_str + "\n"
+
+    return texto
 
 
