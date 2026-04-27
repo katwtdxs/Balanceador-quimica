@@ -1,4 +1,5 @@
-# ================= HISTORIAL CON TXT =================
+# HISTORIAL CON TXT 
+# Función realizada por Lizeth Sastoque
 
 
 from datetime import datetime
@@ -25,17 +26,17 @@ def mostrar_historial():
             contenido = archivo.read()
             
             if contenido.strip() == "":
-                print("\nNo hay historial todavía 🫠")
+                print("\nNo hay historial todavía ")
             else:
                 print("\n===== HISTORIAL =====")
                 print(contenido)
                 
     except FileNotFoundError:
-        print("\nNo hay historial todavía 🫠")
+        print("\nNo hay historial todavía ")
 
 
 def exportar_txt():
-    # En este caso ya estamos trabajando en TXT 😅
+    # En este caso ya estamos trabajando en TXT 
     # Así que solo hacemos una copia con otro nombre
     
     try:
@@ -45,7 +46,7 @@ def exportar_txt():
         with open("resultados.txt", "w") as destino:
             destino.write(contenido)
 
-        print("Historial exportado correctamente 📄")
+        print("Historial exportado correctamente ")
 
     except FileNotFoundError:
         print("No hay datos para exportar 😅")
