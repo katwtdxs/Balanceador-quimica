@@ -6,7 +6,7 @@ def contar_elementos(compuesto):
  #Obtiene los elementos presentes en un compuesto
 
     return set(conocer_cantidad_moles(compuesto).keys())
-  """
+ """
     Detecta qué elementos químicos existen
     dentro de un compuesto.
 
