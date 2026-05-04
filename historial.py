@@ -49,4 +49,4 @@ def exportar_txt():
         print("Historial exportado correctamente ")
 
     except FileNotFoundError:
-        print("No hay datos para exportar 😅")
+        print("No hay datos para exportar")

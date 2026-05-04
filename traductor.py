@@ -9,7 +9,7 @@
 def Separar_ecuacion(cadena):
     """
         Esta función sirve para separar los reactivos de productos teniendo en cuenta que en el 
-        imput (cadena) se separa por el simbolo "=" nos devuelve en el return las listas de compuestos 
+        input (cadena) se separa por el simbolo "=" nos devuelve en el return las listas de compuestos 
         de reactivos y productos, los cuales se separan por el simbolo "+"
     """
     cadena=cadena.replace(" ", "") #Eliminamos posibles espacios
