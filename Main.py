@@ -11,14 +11,14 @@ from historial import guardar_en_historial, exportar_txt
 # CONFIGURACIÓN
 st.set_page_config(page_title="Balanceador Químico", page_icon="🧪")
 
-st.title("🧪 Balanceador de Ecuaciones Químicas")
+st.title("Balanceador de Ecuaciones Químicas")
 st.write("Ingresa una ecuación química")
 
 ecuacion = st.text_input("Ejemplo: H2 + O2 = H2O")
 
 
 # BOTÓN PRINCIPAL
-if st.button("🔍 Analizar"):
+if st.button(" Analizar"):
 
     if ecuacion.strip() == "":
         st.warning("Escribe una ecuación primero")
@@ -46,17 +46,17 @@ if st.button("🔍 Analizar"):
                 elif i < len(compuestos) - 1:
                     ecuacion_balanceada += " + "
 
-            st.subheader("✅ Ecuación balanceada")
+            st.subheader("Ecuación balanceada")
             st.success(ecuacion_balanceada)
 
             # 4. Tipo de reacción
             tipo = clasificar_reaccion(ecuacion)
 
-            st.subheader("🧪 Tipo de reacción")
+            st.subheader("Tipo de reacción")
             st.info(tipo)
 
             # 5. Masas molares
-            st.subheader("⚖️ Masas molares")
+            st.subheader(" Masas molares")
 
             masas = {}
             for comp in compuestos:
