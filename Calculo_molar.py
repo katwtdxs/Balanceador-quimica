@@ -46,6 +46,8 @@ masa_molar_elementos ={
     "Bk": 247.000, "Cf": 251.000, "Es": 252.000, "Fm": 257.000,
     "Md": 258.000, "No": 259.000, "Lr": 262.000
     }
+# IMPORT NECESARIO
+from traductor import conocer_cantidad_moles
  
 def calculo_masa_molar(compuesto):
     elementos = conocer_cantidad_moles(compuesto) #Con la función de calculo de moles de las sustancias sacamos esos valores

@@ -17,7 +17,7 @@ Dependencias:
     - Traductor.conocer_cantidad_moles
     - Traductor.Separar_ecuacion
 """
-
+from traductor import conocer_cantidad_moles, Separar_ecuacion
 def contar_elementos(compuesto):
  #Obtiene los elementos presentes en un compuesto
   
