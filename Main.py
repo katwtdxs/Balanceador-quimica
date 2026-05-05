@@ -1,3 +1,17 @@
+"""
+Módulo: Main
+Descripción:
+    Punto de entrada del programa. Gestiona el flujo principal de la
+    aplicación: recibe la ecuación del usuario, invoca el balanceo,
+    clasifica la reacción, calcula masas molares y registra el resultado
+    en el historial.
+Dependencias:
+    - Traductor
+    - matrices
+    - Tipo_reaccion
+    - Calculo_molar
+    - Historial
+"""
 import streamlit as st
 
 # Importar módulos
