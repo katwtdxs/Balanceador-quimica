@@ -1,10 +1,22 @@
-#Función realizada por Karen González
+"""
+Módulo: Calculo_molar
+Autor: Karen González
+Descripción:
+    Calcula la masa molar de un compuesto químico a partir de su fórmula.
+    Utiliza un diccionario interno con las masas molares de todos los
+    elementos de la tabla periódica (en g/mol).
+Funciones:
+    - calculo_masa_molar(compuesto): Devuelve la masa molar total del compuesto
+      redondeada a 3 decimales.
+Dependencias:
+    - Traductor.conocer_cantidad_moles
+"""
 
 """
     Para expresar más información del balanceo tambien calculamos la masa molar de los compuestos
     tanto de los reactivos y de los productos
 """
-from traductor import conocer_cantidad_moles
+
 #Creamos un diccionario con los elementos y sus respectivas masas molares
 masa_molar_elementos ={
     "H": 1.008, "He": 4.003, "Li": 6.941, "Be": 9.012,
@@ -34,9 +46,6 @@ masa_molar_elementos ={
     "Bk": 247.000, "Cf": 251.000, "Es": 252.000, "Fm": 257.000,
     "Md": 258.000, "No": 259.000, "Lr": 262.000
     }
-
-# IMPORT NECESARIO
-from traductor import conocer_cantidad_moles
  
 def calculo_masa_molar(compuesto):
     elementos = conocer_cantidad_moles(compuesto) #Con la función de calculo de moles de las sustancias sacamos esos valores
