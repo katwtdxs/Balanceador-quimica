@@ -77,7 +77,7 @@ if st.button(" Analizar"):
 
 # HISTORIAL
 st.markdown("---")
-st.header("📜 Historial")
+st.header("Historial ecuaciones balanceadas")
 
 # Mostrar historial en Streamlit
 try:
@@ -91,5 +91,5 @@ except FileNotFoundError:
     st.write("No hay historial todavía")
 
 # Botón exportar
-if st.button("📥 Exportar historial"):
+if st.button("Exportar historial"):
     exportar_txt()
