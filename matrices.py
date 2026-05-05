@@ -23,7 +23,7 @@ Dependencias:
 from math import gcd
 
 # Adicionalmente importo la funcion conocer_cantidad_moles de traductor para contar con el diccionario de los coeficientes 
-from Traductor import conocer_cantidad_moles
+from traductor import conocer_cantidad_moles
 
 
 # Esta funcion como su nombre lo dice toma la ecuacion quimica especialmente los coeficientes 

@@ -612,3 +612,21 @@ st.header(" Historial")
 
 mostrar_historial()
 exportar_historial()
+
+st.header("Historial ecuaciones balanceadas")
+
+# Mostrar historial en Streamlit
+try:
+    with open("historial.txt", "r") as archivo:
+        contenido = archivo.read()
+        if contenido.strip() == "":
+            st.write("No hay historial todavía")
+        else:
+            st.text(contenido)
+except FileNotFoundError:
+    st.write("No hay historial todavía")
+
+# Botón exportar
+if st.button("Exportar historial"):
+    exportar_txt()
+

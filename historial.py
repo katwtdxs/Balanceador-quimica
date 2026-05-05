@@ -40,11 +40,15 @@ def mostrar_historial():
             
             if contenido.strip() == "":
                 print("\nNo hay historial todavía ")
+
             else:
                 print("\n===== HISTORIAL =====")
                 print(contenido)
                 
     except FileNotFoundError:
+
+        # Si el archivo no existe aún, se evita que el programa falle
+
         print("\nNo hay historial todavía ")
 
 
@@ -62,4 +66,6 @@ def exportar_txt():
         print("Historial exportado correctamente ")
 
     except FileNotFoundError:
-        print("No hay datos para exportar 😅")
+         print("No hay datos para exportar ")
+        # Su no hay historial, se muestra un mensaje indicando que no hay datos para exportar
+         print("No hay datos para exportar ")
