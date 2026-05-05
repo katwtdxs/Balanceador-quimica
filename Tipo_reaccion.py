@@ -1,11 +1,28 @@
-#Parte hecha por: Julian Ruiz
-
-from traductor import conocer_cantidad_moles, Separar_ecuacion
+"""
+Módulo: Tipo_reaccion
+Autor: Julian Ruiz
+Descripción:
+    Clasifica el tipo de reacción química a partir de la estructura
+    de reactivos y productos. Identifica reacciones de síntesis,
+    descomposición, sustitución simple, doble sustitución y combustión.
+Funciones:
+    - clasificar_reaccion(ecuacion): Función principal; recibe la ecuación
+      como string y devuelve el tipo de reacción como string.
+    - es_combustion, es_sintesis, es_descomposicion,
+      es_sustitucion_simple, es_doble_sustitucion: Funciones auxiliares
+      de clasificación.
+    - es_elemento_puro, es_compuesto, es_hidrocarburo: Funciones de
+      caracterización de compuestos.
+Dependencias:
+    - Traductor.conocer_cantidad_moles
+    - Traductor.Separar_ecuacion
+"""
 
 def contar_elementos(compuesto):
  #Obtiene los elementos presentes en un compuesto
-
+  
     return set(conocer_cantidad_moles(compuesto).keys())
+
 
 def es_elemento_puro(compuesto):
     return len(contar_elementos(compuesto)) == 1
@@ -40,22 +57,20 @@ def es_combustion(reactivos, productos):
 
 
 def es_sintesis(reactivos, productos):
+    return len(reactivos) > len(productos)
     """
         Reacción de síntesis:
 
             A + B → AB
     """
-    return len(reactivos) > len(productos)
-
 
 def es_descomposicion(reactivos, productos):
+    return len(reactivos) < len(productos)
     """
         Reacción de descomposición:
 
             AB → A + B
     """
-    return len(reactivos) < len(productos)
-
 
 def es_sustitucion_simple(reactivos, productos):
     """
@@ -73,15 +88,15 @@ def es_sustitucion_simple(reactivos, productos):
 
 
 def es_doble_sustitucion(reactivos, productos):
-    """
+  """
         Reacción de doble sustitución:
 
             AB + CD → AD + CB
-    """
-    if len(reactivos) != 2 or len(productos) != 2:
+  """
+  if len(reactivos) != 2 or len(productos) != 2:
         return False
 
-    return all(es_compuesto(x) for x in reactivos + productos)
+  return all(es_compuesto(x) for x in reactivos + productos)
 
 
 #Funcion principal para que entregue resultados

@@ -1,5 +1,22 @@
-# Funcion realizada por Santiago Hernández
-
+"""
+Módulo: matrices
+Autor: Santiago Hernández
+Descripción:
+    Implementa el balanceo algebraico de ecuaciones químicas mediante
+    el método de álgebra lineal (eliminación de Gauss-Jordan).
+    Construye una matriz estequiométrica a partir de los compuestos,
+    la reduce a su forma escalonada y extrae coeficientes enteros.
+Funciones:
+    - construir_matriz(reactivos, productos): Genera la matriz estequiométrica.
+    - gauss_jordan(matriz): Aplica reducción de Gauss-Jordan.
+    - extraer_coeficientes(matriz_rref, num_compuestos): Obtiene coeficientes desde la RREF.
+    - racionalizar_coeficientes(coeficientes): Convierte coeficientes flotantes a enteros.
+    - calcular_coeficientes(reactivos, productos): Función principal de balanceo.
+    - imprimir_matriz(matriz, elementos, compuestos, titulo): Imprime la matriz formateada.
+Dependencias:
+    - math.gcd
+    - Traductor.conocer_cantidad_moles
+"""
 # Inicialmente importo la funcion gcd de la libreria math, esta funcion es por sus siglas en ingles
 # Greatest Common Divisor, que es el maximo comun divisor, esta funcion es necesaria para simplificar fracciones
 # Y se usara mas adelante al racionalizar los coeficientes
