@@ -1,6 +1,19 @@
-# Función realizada por Lzeth Sastoque
-# Aquí guardamos todo en un archivo de texto sencillo
-# Es más fácil de manejar y no depende de formatos complejos
+"""
+Módulo: Historial con txt
+Autor: Lizeth Sastoque
+Descripción:
+    Gestiona el registro persistente de las ecuaciones procesadas por
+    el programa. Guarda cada resultado en un archivo de texto plano
+    (historial.txt) con fecha y hora, y permite visualizar o exportar
+    el historial.
+Funciones:
+    - guardar_en_historial(ecuacion, balanceada, tipo): Añade una entrada al historial.
+    - mostrar_historial(): Imprime el historial completo en consola.
+    - exportar_txt(): Copia el historial a un archivo 'resultados.txt'.
+Dependencias:
+    - datetime (librería estándar de Python)
+"""
+
 
 from datetime import datetime
 
@@ -8,56 +21,45 @@ ARCHIVO_HISTORIAL = "historial.txt"
 
 
 def guardar_en_historial(ecuacion, balanceada, tipo):
-    # Esta función guarda cada operación que realiza el usuario
-    # Se abre el archivo en modo "append" para no borrar lo que ya hay, y se escribe la información con un formato legible
-
-
+    # Cada vez que el usuario haga una operación, se guarda aquí
+    
     with open(ARCHIVO_HISTORIAL, "a") as archivo:
-        archivo.write("Ecuación: " + ecuacion + "\n")  # Se guarda la ecuación original
-        archivo.write("Balanceada: " + balanceada + "\n") # Se guarda la ecuación ya balanceada
-        archivo.write("Tipo: " + tipo + "\n") # Se guarda el tipo de reacción (síntesis, descomposición, etc.)
-        archivo.write("Fecha: " + datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "\n")  # Se guarda la fecha y hora en la que se hizo la operación
+        archivo.write("Ecuación: " + ecuacion + "\n")
+        archivo.write("Balanceada: " + balanceada + "\n")
+        archivo.write("Tipo: " + tipo + "\n")
+        archivo.write("Fecha: " + datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "\n")
         archivo.write("-" * 40 + "\n")  # separador para que no se mezcle todo
 
 
 def mostrar_historial():
-    # Esta función lee el archivo y muestra todo el historial guardado
+    # Muestra todo lo que está guardado
     
     try:
         with open(ARCHIVO_HISTORIAL, "r") as archivo:
             contenido = archivo.read()
             
-
-
-            # Si el archivo está vació, se muestra un mensaje 
             if contenido.strip() == "":
-                print("\nNo hay historial todavía 🫠")
-           
-           # Si sí hay datos, se muestran organizados
+                print("\nNo hay historial todavía ")
             else:
                 print("\n===== HISTORIAL =====")
                 print(contenido)
                 
     except FileNotFoundError:
-        # Si el archivo no existe aún, se evita que el programa falle
-        print("\nNo hay historial todavía 🫠")
+        print("\nNo hay historial todavía ")
 
 
 def exportar_txt():
-    # Esta función crea una copia del historial con otro nombre
-
-    # Es decir "Exporta# el contenido a un nuevo archivo"
+    # En este caso ya estamos trabajando en TXT 
+    # Así que solo hacemos una copia con otro nombre
     
     try:
-        # Se lee el archivo original y se guarda su contenido
         with open(ARCHIVO_HISTORIAL, "r") as origen:
             contenido = origen.read()
-        # Se crea un nuevo archivo y se escribe el contenido del historial en él
+
         with open("resultados.txt", "w") as destino:
             destino.write(contenido)
 
-        print("Historial exportado correctamente 📄")
+        print("Historial exportado correctamente ")
 
     except FileNotFoundError:
-        # Su no hay historial, se muestra un mensaje indicando que no hay datos para exportar
         print("No hay datos para exportar 😅")

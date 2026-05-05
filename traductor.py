@@ -1,4 +1,18 @@
-#Función realizada por Karen González
+"""
+Módulo: Traductor
+Autor: Karen González
+Descripción:
+    Contiene las funciones base para interpretar ecuaciones químicas
+    escritas como strings. Permite separar reactivos de productos y
+    contar la cantidad de átomos de cada elemento en un compuesto,
+    incluyendo soporte para paréntesis y subíndices.
+Funciones:
+    - Separar_ecuacion(cadena): Divide la ecuación en listas de reactivos y productos.
+    - conocer_cantidad_moles(sustancia): Devuelve un diccionario {elemento: cantidad}
+      para un compuesto dado.
+Dependencias: Ninguna (módulo base del proyecto).
+"""
+
 """
     Para poder iniciar a asignarle un coeficiente a cada compuesto es necesalio convertir
     el string que se ingresa en el input en información que se pueda manejar en el calculo
@@ -9,7 +23,7 @@
 def Separar_ecuacion(cadena):
     """
         Esta función sirve para separar los reactivos de productos teniendo en cuenta que en el 
-        input (cadena) se separa por el simbolo "=" nos devuelve en el return las listas de compuestos 
+        imput (cadena) se separa por el simbolo "=" nos devuelve en el return las listas de compuestos 
         de reactivos y productos, los cuales se separan por el simbolo "+"
     """
     cadena=cadena.replace(" ", "") #Eliminamos posibles espacios
