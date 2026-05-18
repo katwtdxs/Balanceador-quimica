@@ -1,4 +1,4 @@
-#Parte hecha por: Julian Ruiz
+#Funcionalidad hecha por: Julian Ruiz
 
 from traductor import conocer_cantidad_moles, Separar_ecuacion
 

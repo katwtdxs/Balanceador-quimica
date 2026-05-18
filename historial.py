@@ -1,4 +1,4 @@
-# Función realizada por Lzeth Sastoque
+# Función realizada por Lizeth Sastoque
 # Aquí guardamos todo en un archivo de texto sencillo
 # Es más fácil de manejar y no depende de formatos complejos
 

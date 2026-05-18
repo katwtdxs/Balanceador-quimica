@@ -20,10 +20,6 @@ from traductor import Separar_ecuacion, conocer_cantidad_moles
 # ────────────────────────────────────────────────────────────
 # FUNCIÓN INTERNA: sumar todos los átomos de un lado
 # de la ecuación con sus coeficientes dados.
-#
-# Ejemplo: ["H2", "O2"] con coeficientes [2, 1]
-#   → {"H": 4, "O": 2}
-# ────────────────────────────────────────────────────────────
 def _contar_atomos(compuestos, coeficientes):
     conteo = {}
     for comp, coef in zip(compuestos, coeficientes):
