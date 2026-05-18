@@ -18,21 +18,21 @@ from traductor import Separar_ecuacion, conocer_cantidad_moles
 from matrices  import construir_matriz, gauss_jordan, extraer_coeficientes, racionalizar_coeficientes
 
 
-# ────────────────────────────────────────────────────────────
 # AUXILIAR: mostrar un número sin ceros decimales inútiles
 #   2.0  →  "2"     |     1.5  →  "1.5"
-# ────────────────────────────────────────────────────────────
+
+
 def _fmt(n):
     if abs(n - round(n)) < 1e-9:
         return str(int(round(n)))
     return f"{n:.4f}"
 
 
-# ────────────────────────────────────────────────────────────
+
 # AUXILIAR: escribir la ecuación con coeficientes dados
 #   Ejemplo de salida: "2H2 + O2 = 2H2O"
 #   Si el coeficiente es 1 no se imprime (convención química)
-# ────────────────────────────────────────────────────────────
+
 def _escribir_ecuacion(compuestos, coeficientes, num_reactivos):
     lado_r, lado_p = [], []
     for i, comp in enumerate(compuestos):
@@ -46,10 +46,11 @@ def _escribir_ecuacion(compuestos, coeficientes, num_reactivos):
     return " + ".join(lado_r) + " = " + " + ".join(lado_p)
 
 
-# ────────────────────────────────────────────────────────────
+
 # AUXILIAR: imprimir la matriz como tabla de texto
 #   Filas = elementos químicos  |  Columnas = compuestos
-# ────────────────────────────────────────────────────────────
+
+
 def _tabla_matriz(mat, elementos, compuestos):
     ancho  = 10
     lineas = []
@@ -71,12 +72,12 @@ def _tabla_matriz(mat, elementos, compuestos):
     return "\n".join(lineas)
 
 
-# ────────────────────────────────────────────────────────────
+
 # INTERNO: Gauss-Jordan registrando cada operación
 #
 # Devuelve una lista de tuplas (descripción, tabla_resultado)
 # para que el usuario vea qué se hizo y cómo quedó la matriz.
-# ────────────────────────────────────────────────────────────
+
 def _gauss_jordan_con_pasos(matriz_in, elementos, compuestos):
 
     mat = [fila[:] for fila in matriz_in]   # copia para no modificar el original
@@ -140,9 +141,10 @@ def _gauss_jordan_con_pasos(matriz_in, elementos, compuestos):
     return ops
 
 
-# ============================================================
+
 # FUNCIÓN PÚBLICA — única función que Main.py necesita
-# ============================================================
+
+
 def explicar_balanceo(ecuacion: str) -> list:
     """
     Recibe una ecuación química ("H2+O2=H2O") y devuelve una
@@ -157,9 +159,9 @@ def explicar_balanceo(ecuacion: str) -> list:
     letras = list("abcdefghijklmnopqrstuvwxyz")
 
 
-    # ══════════════════════════════════════════════════════
-    # PASO 1 — Reactivos, productos e incógnitas
-    # ══════════════════════════════════════════════════════
+
+    # Primero se muestran los valores iniciales de reactivos, productos e incógnitas
+
     reactivos, productos = Separar_ecuacion(ecuacion)
     num_reactivos        = len(reactivos)
     compuestos_todos     = reactivos + productos
@@ -181,9 +183,9 @@ def explicar_balanceo(ecuacion: str) -> list:
     pasos.append(SEP)
 
 
-    # ══════════════════════════════════════════════════════
-    # PASO 2 — Plantear el sistema de ecuaciones
-    # ══════════════════════════════════════════════════════
+
+    # Luego se plantea el sistema de ecuaciones
+
     matriz_orig, elementos, compuestos = construir_matriz(reactivos, productos)
     num_compuestos = len(compuestos)
 
@@ -221,9 +223,7 @@ def explicar_balanceo(ecuacion: str) -> list:
     pasos.append(SEP)
 
 
-    # ══════════════════════════════════════════════════════
-    # PASO 3 — Reducción por Gauss-Jordan
-    # ══════════════════════════════════════════════════════
+    # Luego se hace la reducción por el metodo de Gauss-Jordan
     pasos.append(
         "### Paso 3 — Reducción por Gauss-Jordan\n\n"
         "Ahora resolvemos la matriz con el **método de Gauss-Jordan**. "
@@ -253,9 +253,8 @@ def explicar_balanceo(ecuacion: str) -> list:
     pasos.append(SEP)
 
 
-    # ══════════════════════════════════════════════════════
-    # PASO 4 — Leer la solución
-    # ══════════════════════════════════════════════════════
+
+    # y se lee la solucion 
     matriz_rref = gauss_jordan(matriz_orig)
     coef_float  = extraer_coeficientes(matriz_rref, num_compuestos)
 
@@ -265,11 +264,11 @@ def explicar_balanceo(ecuacion: str) -> list:
     )
 
     pasos.append(
-        "### Paso 4 — Leer la solución\n\n"
+        "### Paso 4 — Leer la solución"
         "Con la matriz en RREF el sistema queda resuelto, pero tiene "
         "**infinitas soluciones** porque hay una variable libre "
         "(los coeficientes se pueden escalar todos por el mismo número "
-        "y la ecuación sigue balanceada).\n\n"
+        "y la ecuación sigue balanceada)."
         "Para fijar una solución concreta tomamos la convención de "
         "asignarle **1** al último coeficiente y despejamos los demás.\n\n"
         "**Valores obtenidos:**\n\n"
@@ -278,9 +277,9 @@ def explicar_balanceo(ecuacion: str) -> list:
     pasos.append(SEP)
 
 
-    # ══════════════════════════════════════════════════════
-    # PASO 5 — Convertir a enteros
-    # ══════════════════════════════════════════════════════
+
+    # Y por ultimo se convierten los diferentes resultados a enteros
+
     coef_enteros        = racionalizar_coeficientes(coef_float)
     ecuacion_balanceada = _escribir_ecuacion(compuestos, coef_enteros, num_reactivos)
 

@@ -201,7 +201,7 @@ def verificar_respuesta(ecuacion_correcta, respuesta_usuario):
                 return False, f"La ecuación no está balanceada. El elemento **{elem}** no coincide en ambos lados."
 
         # Si llegamos hasta aquí, la respuesta está matemáticamente correcta
-        return True, "¡Correcto! La ecuación está perfectamente balanceada. 🎉"
+        return True, "¡Correcto! La ecuación está perfectamente balanceada."
 
     except Exception as e:
         # Si hay un error al parsear, probablemente el formato está mal
@@ -222,8 +222,8 @@ def generar_retroalimentacion(atomos_react, atomos_prod):
         r = atomos_react.get(elem, 0)
         p = atomos_prod.get(elem, 0)
         if r == p:
-            lineas.append(f"✅ **{elem}**: {r} = {p}  (bien)")
+            lineas.append(f" **{elem}**: {r} = {p}  (bien)")
         else:
-            lineas.append(f"❌ **{elem}**: {r} (reactivos) ≠ {p} (productos)")
+            lineas.append(f" **{elem}**: {r} (reactivos) ≠ {p} (productos)")
 
     return "\n".join(lineas)
