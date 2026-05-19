@@ -64,13 +64,13 @@ st.title("🧪 Balanceador de Ecuaciones Químicas")
 # Creamos las pestañas principales del sistema
 pestanas = st.tabs([
 
-    "⚖️ Balanceador",
+    " Balanceador",
 
-    "🔬 Tabla Periódica",
+    " Tabla Periódica",
 
-    "🎮 Quiz",
+    " Quiz",
 
-    "📜 Historial",
+    " Historial",
 ])
 
 
@@ -91,7 +91,7 @@ with pestanas[0]:
     )
 
     # Botón principal para analizar la ecuación
-    if st.button("🔍 Analizar"):
+    if st.button(" Analizar"):
 
         # Verificamos que el usuario haya escrito algo
         if ecuacion.strip() == "":
@@ -108,7 +108,7 @@ with pestanas[0]:
             if not es_valida:
 
                 st.error(
-                    "⚠️ La ecuación tiene errores."
+                    " La ecuación tiene errores."
                 )
 
                 # Mostramos todos los errores encontrados
@@ -128,13 +128,13 @@ with pestanas[0]:
                     if ya_balanceada:
 
                         st.success(
-                            "✅ Esta ecuación ya está balanceada."
+                            " Esta ecuación ya está balanceada."
                         )
 
                     else:
 
                         st.info(
-                            "⚖️ La ecuación no está balanceada."
+                            " La ecuación no está balanceada."
                         )
 
                     # Separamos reactivos y productos
@@ -178,7 +178,7 @@ with pestanas[0]:
 
                     # Resultado principal
                     st.subheader(
-                        "✅ Ecuación balanceada"
+                        " Ecuación balanceada"
                     )
 
                     st.success(ecuacion_balanceada)
@@ -187,7 +187,7 @@ with pestanas[0]:
                     tipo = clasificar_reaccion(ecuacion)
 
                     st.subheader(
-                        "⚗️ Tipo de reacción"
+                        " Tipo de reacción"
                     )
 
                     # Obtenemos la explicación del tipo
@@ -200,7 +200,7 @@ with pestanas[0]:
 
                     # Explicación expandible
                     with st.expander(
-                        "📖 Ver explicación"
+                        " Ver explicación"
                     ):
 
                         st.markdown(
@@ -219,12 +219,12 @@ with pestanas[0]:
                         )
 
                         st.markdown(
-                            f"**💡 Curiosidad:**\n\n"
+                            f"** Curiosidad:**\n\n"
                             f"{info_tipo['curiosidad']}"
                         )
 
                     # Mostramos masas molares
-                    st.subheader("⚖️ Masas molares")
+                    st.subheader(" Masas molares")
 
                     for comp in compuestos:
 
@@ -235,7 +235,7 @@ with pestanas[0]:
                         )
 
                     # Conteo de átomos
-                    st.subheader("🔢 Conteo de átomos")
+                    st.subheader(" Conteo de átomos")
 
                     datos = tabla_verificacion(
                         reactivos,
@@ -340,7 +340,7 @@ with pestanas[0]:
 
 with pestanas[1]:
 
-    st.header("🔬 Consulta de Elementos")
+    st.header(" Consulta de Elementos")
 
     st.write(
         "Busca un elemento usando su símbolo "
@@ -495,7 +495,7 @@ with pestanas[2]:
         st.write("")
 
         # Botón para generar nueva pregunta
-        if st.button("🎲 Nueva pregunta"):
+        if st.button(" Nueva pregunta"):
 
             nivel = (
                 None
@@ -573,7 +573,7 @@ with pestanas[2]:
 
             with col_verificar:
 
-                if st.button("✅ Verificar"):
+                if st.button(" Verificar"):
 
                     if not respuesta.strip():
 
@@ -607,7 +607,7 @@ with pestanas[2]:
             with col_pista:
 
                 # Mostrar pistas
-                if st.button("💡 Pedir pista"):
+                if st.button(" Pedir pista"):
 
                     idx = st.session_state.quiz_pista_idx
 
@@ -652,7 +652,7 @@ with pestanas[2]:
 
 with pestanas[3]:
 
-    st.header("📜 Historial de ecuaciones")
+    st.header(" Historial de ecuaciones")
 
     try:
 
