@@ -1,29 +1,29 @@
 # Programa principal realizado por el equipo del proyecto
 
 """
-Este archivo es el núcleo principal de la aplicación.
+Este archivo es el nucleo principal de la aplicacion.
 
-Aquí conectamos todos los módulos del proyecto
+Aqui conectamos todos los modulos del proyecto
 para construir la interfaz interactiva en Streamlit.
 
 El sistema permite:
 
-- Balancear ecuaciones químicas
-- Verificar átomos antes y después del balanceo
-- Identificar el tipo de reacción
+- Balancear ecuaciones quimicas
+- Verificar atomos antes y despues del balanceo
+- Identificar el tipo de reaccion
 - Calcular masas molares
-- Consultar elementos de la tabla periódica
+- Consultar elementos de la tabla periodica
 - Practicar con un quiz interactivo
 - Guardar y exportar historial de resultados
 
-Cada funcionalidad está organizada en pestañas
-para que la aplicación sea más clara y fácil de usar.
+Cada funcionalidad esta organizada en pestanas
+para que la aplicacion sea mas clara y facil de usar.
 """
 
 import streamlit as st
 import pandas as pd
 
-# Importamos los módulos principales del proyecto
+# Importamos los modulos principales del proyecto
 from traductor import Separar_ecuacion
 from matrices import calcular_coeficientes
 from Tipo_reaccion import clasificar_reaccion
@@ -33,87 +33,74 @@ from explicacion_balanceo import explicar_balanceo
 from verificar_atomos import tabla_verificacion
 from verificacion import ecuacion_ya_balanceada
 
-# Importamos módulos adicionales
+# Importamos modulos adicionales
 from validacion import validar_ecuacion
 from explicacion_reacciones import obtener_explicacion
 from tabla_periodica import (
     buscar_elemento,
     obtener_color_categoria
 )
-
 from quiz import (
     obtener_pregunta_aleatoria,
     verificar_respuesta
 )
 
 
-# Configuración general de la página
+# Configuracion general de la pagina
 st.set_page_config(
-
-    page_title="Balanceador Químico",
-
-    page_icon="🧪",
-
+    page_title="Balanceador Quimico",
+    page_icon="",
     layout="wide"
 )
 
-# Título principal de la aplicación
-st.title("🧪 Balanceador de Ecuaciones Químicas")
+# Titulo principal de la aplicacion
+st.title("Balanceador de Ecuaciones Quimicas")
 
 
-# Creamos las pestañas principales del sistema
+# Creamos las pestanas principales del sistema
 pestanas = st.tabs([
-
-    " Balanceador",
-
-    " Tabla Periódica",
-
-    " Quiz",
-
-    " Historial",
+    "Balanceador",
+    "Tabla Periodica",
+    "Quiz",
+    "Historial",
 ])
 
 
 # ============================================================
-# PESTAÑA 1 — Balanceador principal
+# PESTANA 1 - Balanceador principal
 # ============================================================
 with pestanas[0]:
 
     st.write(
-        "Escribe una ecuación usando '=' para separar "
+        "Escribe una ecuacion usando '=' para separar "
         "reactivos y productos, y '+' entre compuestos."
     )
 
-    # Campo donde el usuario escribe la ecuación
+    # Campo donde el usuario escribe la ecuacion
     ecuacion = st.text_input(
         "Ejemplo: H2 + O2 = H2O",
         key="ecuacion_input"
     )
 
-    # Botón principal para analizar la ecuación
-    if st.button(" Analizar"):
+    # Boton principal para analizar la ecuacion
+    if st.button("Analizar"):
 
         # Verificamos que el usuario haya escrito algo
         if ecuacion.strip() == "":
 
-            st.warning(
-                "Escribe una ecuación primero."
-            )
+            st.warning("Escribe una ecuacion primero.")
 
         else:
 
-            # Validamos la ecuación antes de procesarla
+            # Validamos la ecuacion antes de procesarla
             es_valida, errores = validar_ecuacion(ecuacion)
 
             if not es_valida:
 
-                st.error(
-                    " La ecuación tiene errores."
-                )
+                st.error("La ecuacion tiene errores.")
 
                 # Mostramos todos los errores encontrados
                 for error in errores:
-
                     st.write(f"- {error}")
 
             else:
@@ -126,15 +113,12 @@ with pestanas[0]:
                     )
 
                     if ya_balanceada:
-
                         st.success(
-                            " Esta ecuación ya está balanceada."
+                            "Esta ecuacion ya esta balanceada."
                         )
-
                     else:
-
                         st.info(
-                            " La ecuación no está balanceada."
+                            "La ecuacion no esta balanceada."
                         )
 
                     # Separamos reactivos y productos
@@ -150,7 +134,7 @@ with pestanas[0]:
                         )
                     )
 
-                    # Construimos la ecuación balanceada
+                    # Construimos la ecuacion balanceada
                     ecuacion_balanceada = ""
 
                     for i, comp in enumerate(compuestos):
@@ -158,84 +142,59 @@ with pestanas[0]:
                         coef = coeficientes[i]
 
                         if coef == 1:
-
                             ecuacion_balanceada += comp
-
                         else:
+                            ecuacion_balanceada += f"{coef}{comp}"
 
-                            ecuacion_balanceada += (
-                                f"{coef}{comp}"
-                            )
-
-                        # Agregamos símbolos de separación
+                        # Agregamos simbolos de separacion
                         if i == len(reactivos) - 1:
-
                             ecuacion_balanceada += " = "
-
                         elif i < len(compuestos) - 1:
-
                             ecuacion_balanceada += " + "
 
                     # Resultado principal
-                    st.subheader(
-                        " Ecuación balanceada"
-                    )
-
+                    st.subheader("Ecuacion balanceada")
                     st.success(ecuacion_balanceada)
 
-                    # Clasificamos el tipo de reacción
+                    # Clasificamos el tipo de reaccion
                     tipo = clasificar_reaccion(ecuacion)
+                    st.subheader("Tipo de reaccion")
 
-                    st.subheader(
-                        " Tipo de reacción"
-                    )
-
-                    # Obtenemos la explicación del tipo
+                    # Obtenemos la explicacion del tipo
                     info_tipo = obtener_explicacion(tipo)
-
                     st.info(
-                        f"{info_tipo['icono']} "
-                        f"**{info_tipo['nombre_completo']}**"
+                        f"{info_tipo['nombre_completo']}"
                     )
 
-                    # Explicación expandible
-                    with st.expander(
-                        " Ver explicación"
-                    ):
+                    # Explicacion expandible
+                    with st.expander("Ver explicacion"):
 
                         st.markdown(
-                            f"**¿Qué es?**\n\n"
+                            f"**Que es?**\n\n"
                             f"{info_tipo['descripcion']}"
                         )
-
                         st.markdown(
-                            f"**¿Cómo identificarla?**\n\n"
+                            f"**Como identificarla?**\n\n"
                             f"{info_tipo['como_identificarla']}"
                         )
-
                         st.markdown(
-                            f"**Ejemplo clásico:**\n\n"
+                            f"**Ejemplo clasico:**\n\n"
                             f"`{info_tipo['ejemplo']}`"
                         )
-
                         st.markdown(
-                            f"** Curiosidad:**\n\n"
+                            f"**Curiosidad:**\n\n"
                             f"{info_tipo['curiosidad']}"
                         )
 
                     # Mostramos masas molares
-                    st.subheader(" Masas molares")
+                    st.subheader("Masas molares")
 
                     for comp in compuestos:
-
                         masa = calculo_masa_molar(comp)
+                        st.write(f"**{comp}:** {masa} g/mol")
 
-                        st.write(
-                            f"**{comp}:** {masa} g/mol"
-                        )
-
-                    # Conteo de átomos
-                    st.subheader(" Conteo de átomos")
+                    # Conteo de atomos
+                    st.subheader("Conteo de atomos")
 
                     datos = tabla_verificacion(
                         reactivos,
@@ -245,30 +204,20 @@ with pestanas[0]:
                     )
 
                     # Tabla antes del balanceo
-                    st.markdown(
-                        "**Antes del balanceo**"
-                    )
+                    st.markdown("**Antes del balanceo**")
 
                     filas_antes = []
 
                     for elem in datos["elementos"]:
-
                         filas_antes.append({
-
                             "Elemento": elem,
-
-                            "Reactivos":
-                            datos["antes_reactivos"].get(elem, 0),
-
-                            "Productos":
-                            datos["antes_productos"].get(elem, 0),
-
-                            "¿Igual?":
-                            "✅"
+                            "Reactivos": datos["antes_reactivos"].get(elem, 0),
+                            "Productos": datos["antes_productos"].get(elem, 0),
+                            "Igual?":
+                            "Si"
                             if datos["antes_reactivos"].get(elem, 0)
-                            ==
-                            datos["antes_productos"].get(elem, 0)
-                            else "❌"
+                            == datos["antes_productos"].get(elem, 0)
+                            else "No"
                         })
 
                     st.table(
@@ -276,31 +225,21 @@ with pestanas[0]:
                         .set_index("Elemento")
                     )
 
-                    # Tabla después del balanceo
-                    st.markdown(
-                        "**Después del balanceo**"
-                    )
+                    # Tabla despues del balanceo
+                    st.markdown("**Despues del balanceo**")
 
                     filas_despues = []
 
                     for elem in datos["elementos"]:
-
                         filas_despues.append({
-
                             "Elemento": elem,
-
-                            "Reactivos":
-                            datos["despues_reactivos"].get(elem, 0),
-
-                            "Productos":
-                            datos["despues_productos"].get(elem, 0),
-
-                            "¿Igual?":
-                            "✅"
+                            "Reactivos": datos["despues_reactivos"].get(elem, 0),
+                            "Productos": datos["despues_productos"].get(elem, 0),
+                            "Igual?":
+                            "Si"
                             if datos["despues_reactivos"].get(elem, 0)
-                            ==
-                            datos["despues_productos"].get(elem, 0)
-                            else "❌"
+                            == datos["despues_productos"].get(elem, 0)
+                            else "No"
                         })
 
                     st.table(
@@ -308,17 +247,11 @@ with pestanas[0]:
                         .set_index("Elemento")
                     )
 
-                    # Explicación paso a paso
-                    st.subheader(
-                        "📖 Explicación del balanceo"
-                    )
+                    # Explicacion paso a paso
+                    st.subheader("Explicacion del balanceo")
 
-                    with st.expander(
-                        "Ver pasos"
-                    ):
-
+                    with st.expander("Ver pasos"):
                         for bloque in explicar_balanceo(ecuacion):
-
                             st.markdown(bloque)
 
                     # Guardamos el resultado en historial
@@ -329,143 +262,9 @@ with pestanas[0]:
                     )
 
                 except Exception as e:
-
-                    st.error(
-                        f"Error al procesar la ecuación: {e}"
-                    )
+                    st.error(f"Error al procesar la ecuacion: {e}")
 
 
-
-# PESTAÑA 2 — Tabla periódica
-
-with pestanas[1]:
-
-    st.header(" Consulta de Elementos")
-
-    st.write(
-        "Busca un elemento usando su símbolo "
-        "o nombre."
-    )
-
-    # Campo de búsqueda
-    busqueda = st.text_input(
-        "Buscar elemento:",
-        placeholder="Ejemplo: Fe, Hierro, Carbon"
-    )
-
-    if busqueda.strip():
-
-        # Buscamos el elemento
-        elemento = buscar_elemento(busqueda.strip())
-
-        if elemento is None:
-
-            st.error(
-                f"No se encontró ningún elemento "
-                f"con '{busqueda}'."
-            )
-
-        else:
-
-            # Obtenemos el color de la categoría
-            color = obtener_color_categoria(
-                elemento["categoria"]
-            )
-
-            st.markdown("---")
-
-            col_izq, col_der = st.columns([1, 2])
-
-            with col_izq:
-
-                # Tarjeta visual del elemento
-                st.markdown(
-                    f"""
-                    <div style="
-                        background-color: {color};
-                        color: white;
-                        border-radius: 12px;
-                        padding: 20px;
-                        text-align: center;
-                        font-family: monospace;
-                    ">
-                        <div style="font-size: 14px;">
-                            {elemento['numero']}
-                        </div>
-
-                        <div style="
-                            font-size: 60px;
-                            font-weight: bold;
-                        ">
-                            {elemento['simbolo']}
-                        </div>
-
-                        <div style="font-size: 18px;">
-                            {elemento['nombre']}
-                        </div>
-
-                        <div style="font-size: 14px;">
-                            {elemento['masa']} g/mol
-                        </div>
-                    </div>
-                    """,
-
-                    unsafe_allow_html=True,
-                )
-
-            with col_der:
-
-                # Tabla de información del elemento
-                st.markdown(
-                    f"### {elemento['nombre']} "
-                    f"({elemento['simbolo']})"
-                )
-
-                st.table(
-                    pd.DataFrame({
-
-                        "Propiedad": [
-                            "Número atómico",
-                            "Masa atómica",
-                            "Grupo",
-                            "Período",
-                            "Categoría"
-                        ],
-
-                        "Valor": [
-                            elemento["numero"],
-                            f"{elemento['masa']} g/mol",
-                            elemento["grupo"],
-                            elemento["periodo"],
-                            elemento["categoria"],
-                        ]
-
-                    }).set_index("Propiedad")
-                )
-
-
-
-# PESTAÑA 3 — Quiz interactivo
-
-with pestanas[2]:
-
-    st.header("🎮 Quiz de Balanceo")
-
-    st.write(
-        "Practica balanceando ecuaciones químicas."
-    )
-
-    # Inicializamos variables de sesión
-    if "quiz_pregunta" not in st.session_state:
-
-        st.session_state.quiz_pregunta = None
-
-    if "quiz_pista_idx" not in st.session_state:
-
-        st.session_state.quiz_pista_idx = 0
-
-    if "quiz_puntos" not in st.session_state:
-
-        st.session_state.quiz_puntos = 0
-
-    if "qui
+# ============================================================
+# PESTANA 2 - Tabla periodica
+#
