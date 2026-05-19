@@ -1,271 +1,302 @@
-# Funcion realizada por Santiago Hernández
+# Función realizada por Santiago Hernández
 
-# Inicialmente importo la funcion gcd de la libreria math, esta funcion es por sus siglas en ingles
-# Greatest Common Divisor, que es el maximo comun divisor, esta funcion es necesaria para simplificar fracciones
-# Y se usara mas adelante al racionalizar los coeficientes
+"""
+En este módulo realizamos toda la parte matemática del balanceo químico.
+Aquí construimos la matriz de la ecuación, aplicamos el método de
+Gauss-Jordan y finalmente obtenemos los coeficientes enteros de la reacción.
+"""
 
+# Importamos gcd para calcular el máximo común divisor
+# Esto nos ayuda más adelante a simplificar los coeficientes finales
 from math import gcd
 
-# Adicionalmente importo la funcion conocer_cantidad_moles de traductor para contar con el diccionario de los coeficientes 
+# Importamos la función que cuenta los átomos de cada compuesto
 from traductor import conocer_cantidad_moles
 
-# Esta funcion como su nombre lo dice toma la ecuacion quimica especialmente los coeficientes 
-# Y los convierte en una matriz, es basicamente la base para el resto de operaciones dentro del codigo
+
+# Esta función construye la matriz de la ecuación química
+# La matriz será la base para aplicar Gauss-Jordan
 def construir_matriz(reactivos, productos):
 
-    # Bueno, inicialmente tenemos que saber cuantos atomos hay en cada uno de los lados de la reaccion sino como operamos xd
-    # Entonces tenienendo en cuenta que en traductor se creo una funcion con ese resultado
-    # la aplicamos para los reactivos y los productos
-    # obteniendo en cada una de las variables una lista de diccionarios 
+    # Primero contamos los átomos de cada reactivo y producto
     atomos_reactivos = [conocer_cantidad_moles(r) for r in reactivos]
     atomos_productos = [conocer_cantidad_moles(p) for p in productos]
-  
-    # Ahora con esto, lo primero que hago es definir un conjunto sin elementos
-    # este almacenara los elementos presentes en la reaccion pero sin repetirlos esto usando la funcion set
+
+    # Creamos un conjunto para guardar todos los elementos sin repetirlos
     elementos = set()
-    # Ahora defino un bucle for donde recorro cada uno de los elementos de ambos diccionarios 
-    # ya que estoy sumandolos y definiendolos como el limite del bucle
+
+    # Recorremos todos los diccionarios de átomos para extraer los elementos presentes
     for conteo in atomos_reactivos + atomos_productos:
         elementos.update(conteo.keys())
 
-    # Ahora con el conjunto de todos los elementos de la reaccion
-    elementos  = sorted(elementos)
-    compuestos = reactivos + productos         
+    # Organizamos los elementos en orden alfabético
+    elementos = sorted(elementos)
 
-    # Construyo la matriz fila por fila, una fila por cada elemento
-    # Los reactivos son positivos mientras que los productos son negativos
-    # para que al ser totalmente iguales den como resultado total 0
+    # Unimos reactivos y productos en una sola lista
+    compuestos = reactivos + productos
+
+    # Aquí iremos guardando toda la matriz
     matriz = []
-    for i in elementos:  
+
+    # Recorremos cada elemento químico
+    for i in elementos:
+
         fila = []
 
-        # Recorro los reactivos y agrego su conteo de atomos del elemento actual
+        # Agregamos los valores de los reactivos como positivos
         for conteo in atomos_reactivos:
             fila.append(float(conteo.get(i, 0)))
 
-        # De igual forma recorro los productos solo que con signo negativo
+        # Agregamos los productos como negativos
         for conteo in atomos_productos:
             fila.append(-float(conteo.get(i, 0)))
-        
-        # Y aqui voy poniendo cada una de las filas dentro de la matriz
+
+        # Guardamos la fila completa en la matriz
         matriz.append(fila)
 
+    # Finalmente devolvemos la matriz junto con la información adicional
     return matriz, elementos, compuestos
 
 
 
-
-# Esta funcion aplica el metodo de eliminacion de Gauss-Jordan sobre la matriz
-# El objetivo es reducirla a su forma reducida o escalonada
-# Ya que de esta forma se identifican facilmente los coefientes del balanceo
+# Esta función aplica el método de Gauss-Jordan a la matriz
 def gauss_jordan(matriz):
-    
-    # Hago una copia de la matriz para no modificar la original
+
+    # Hacemos una copia para no modificar la matriz original
     matriz = [fila[:] for fila in matriz]
-    # E identifico el numero de filas y el numero de columnas
 
     num_filas = len(matriz)
-    num_cols  = len(matriz[0]) if matriz else 0
-    
-    # Esta variable lleva el control de en que fila estamos colocando el siguiente pivote
-    fila_pivote = 0 
+    num_cols = len(matriz[0]) if matriz else 0
 
-    # Recorro columna por columna buscando pivotes para ir reduciendo la matriz
+    # Esta variable indica en qué fila trabajaremos el pivote
+    fila_pivote = 0
+
+    # Recorremos cada columna de la matriz
     for i in range(num_cols):
 
-        # Busco la primera fila desde fila_pivote hacia abajo que tenga un valor distinto de cero en esta columna
-        # ese sera el elemento pivote con el que vamos a operar
         fila_no_cero = None
+
+        # Buscamos una fila que tenga un valor diferente de cero
         for fila in range(fila_pivote, num_filas):
-            if abs(matriz[fila][i]) > 1e-9: 
+
+            if abs(matriz[fila][i]) > 1e-9:
                 fila_no_cero = fila
                 break
-        
-        # Si no encuentro ningun valor distinto de cero en esta columna, la salto
-        # esto significa que es una columna libre y no aporta un pivote
+
+        # Si toda la columna es cero continuamos con la siguiente
         if fila_no_cero is None:
             continue
 
-        # Intercambio la fila encontrada con la fila pivote actual
-        # para colocar el pivote en la posicion correcta de la matriz
+        # Intercambiamos filas si es necesario
         matriz[fila_pivote], matriz[fila_no_cero] = (
-            matriz[fila_no_cero], matriz[fila_pivote]
+            matriz[fila_no_cero],
+            matriz[fila_pivote]
         )
 
-        # Normalizo la fila del pivote dividiendo toda la fila por el valor del pivote
-        # de esta manera el pivote queda igual a 1, como requiere la forma RREF
+        # Tomamos el valor pivote
         pivote = matriz[fila_pivote][i]
-        matriz[fila_pivote] = [x / pivote for x in matriz[fila_pivote]]
 
-        # Elimino el valor de esta columna en todas las demas filas
-        # tanto hacia arriba como hacia abajo, para que solo el pivote tenga valor distinto de cero
+        # Dividimos toda la fila para convertir el pivote en 1
+        matriz[fila_pivote] = [
+            x / pivote for x in matriz[fila_pivote]
+        ]
+
+        # Ahora hacemos ceros arriba y abajo del pivote
         for fila in range(num_filas):
+
             if fila != fila_pivote and abs(matriz[fila][i]) > 1e-9:
+
                 factor = matriz[fila][i]
-                
-                # Resto a cada elemento de la fila actual el factor multiplicado por la fila pivote
-                # esto es el paso clasico de eliminacion de Gauss-Jordan
+
                 matriz[fila] = [
                     matriz[fila][j] - factor * matriz[fila_pivote][j]
                     for j in range(num_cols)
                 ]
 
-        # Avanzo al siguiente pivote en la fila de abajo
-        fila_pivote += 1   
+        # Pasamos a la siguiente fila pivote
+        fila_pivote += 1
 
+    # Devolvemos la matriz ya reducida
     return matriz
 
 
-# Esta funcion toma la matriz ya reducida (RREF) y extrae los coeficientes de la ecuacion quimica
-# Se fija el ultimo compuesto con valor 1 y despeja los demas usando las filas de la matriz
+
+# Esta función obtiene los coeficientes a partir de la matriz reducida
 def extraer_coeficientes(matriz_rref, num_compuestos):
-    
+
+    # Creamos una lista inicial llena de ceros
     coeficientes = [0.0] * num_compuestos
 
-    # Fijo el ultimo compuesto en 1 como variable libre
-    # esto es necesario porque el sistema es homogeneo y tiene infinitas soluciones
-    # al fijar uno podemos encontrar los valores de los demas
+    # Tomamos el último coeficiente como 1 para poder despejar los demás
     coeficientes[num_compuestos - 1] = 1.0
 
-    # Recorro las filas de la matriz en orden inverso para hacer sustitucion hacia atras
+    # Recorremos las filas desde abajo hacia arriba
     for fila in reversed(matriz_rref):
 
-        # Busco el pivote de esta fila, es decir el primer valor distinto de cero
         col_pivote = None
+
+        # Buscamos la columna donde está el pivote
         for j in range(num_compuestos):
+
             if abs(fila[j]) > 1e-9:
                 col_pivote = j
                 break
 
-        # Si la fila es toda ceros la salto ya que no aporta informacion util
+        # Si la fila está vacía seguimos con la siguiente
         if col_pivote is None:
-            continue  
+            continue
 
-        # Despejo el coeficiente correspondiente al pivote
-        # sumando la contribucion de todas las otras columnas de esa fila
         valor = 0.0
+
+        # Despejamos el valor del coeficiente correspondiente
         for j in range(num_compuestos):
+
             if j != col_pivote:
                 valor -= fila[j] * coeficientes[j]
-        
+
         coeficientes[col_pivote] = valor
 
+    # Devolvemos los coeficientes encontrados
     return coeficientes
 
 
 
-
-# Esta es una funcion auxiliar que calcula el Minimo Comun Multiplo (MCM) de dos numeros
-# Lo usaremos mas adelante para convertir los coeficientes decimales en numeros enteros
+# Esta función calcula el mínimo común múltiplo entre dos números
 def m_c_m(a, b):
 
-    # La formula del MCM se obtiene dividiendo el producto de los dos numeros entre su MCD
     return abs(a * b) // gcd(a, b)
 
 
 
+# Aquí convertimos los coeficientes decimales en enteros
+def racionalizar_coeficientes(
+    coeficientes,
+    tolerancia=1e-6,
+    max_denominador=1000
+):
 
-# Esta funcion convierte los coeficientes flotantes que salen de la RREF en numeros enteros
-# ya que los coeficientes de una ecuacion quimica balanceada deben ser enteros positivos
-def racionalizar_coeficientes(coeficientes, tolerancia=1e-6, max_denominador=1000):
-
-    # Para cada coeficiente busco el denominador que mejor lo aproxima como fraccion p/q
     denominadores = []
 
+    # Recorremos cada coeficiente decimal
     for c in coeficientes:
-        mejor_error      = float('inf')
+
+        mejor_error = float('inf')
         mejor_denominador = 1
 
-        # Pruebo denominadores desde 1 hasta max_denominador y me quedo con el que da menor error
+        # Probamos distintos denominadores para aproximar fracciones
         for q in range(1, max_denominador + 1):
-            p     = round(c * q)
+
+            p = round(c * q)
+
             error = abs(c - p / q)
 
+            # Guardamos la mejor aproximación encontrada
             if error < mejor_error:
-                mejor_error       = error
+
+                mejor_error = error
                 mejor_denominador = q
 
-            # Si el error ya es suficientemente pequeno con este denominador, no sigo buscando
+            # Si el error es suficientemente pequeño dejamos de buscar
             if error < tolerancia:
-                break   
+                break
 
         denominadores.append(mejor_denominador)
 
-    # Calculo el MCM de todos los denominadores encontrados
-    # esto me da el minimo numero por el que debo multiplicar para que todos queden enteros
+    # Calculamos el mínimo común múltiplo de todos los denominadores
     mcm = denominadores[0]
+
     for d in denominadores[1:]:
         mcm = m_c_m(mcm, d)
 
-    # Multiplico cada coeficiente por el MCM y redondeo para obtener enteros
-    # uso abs para asegurar que todos sean positivos
+    # Multiplicamos todos los coeficientes para volverlos enteros
     enteros = [abs(round(c * mcm)) for c in coeficientes]
 
-    # Finalmente simplifico los coeficientes dividiendo entre su MCD total
-    # asi obtenemos los coeficientes minimos enteros positivos de la ecuacion balanceada
+    # Calculamos el máximo común divisor para simplificarlos
     mcd_total = enteros[0]
+
     for e in enteros[1:]:
         mcd_total = gcd(mcd_total, e)
 
+    # Simplificamos los coeficientes si es posible
     if mcd_total > 1:
         enteros = [e // mcd_total for e in enteros]
 
+    # Devolvemos los coeficientes enteros finales
     return enteros
 
 
 
-
-# Esta es la funcion principal del modulo que une todos los pasos anteriores
-# Recibe los reactivos y productos como listas de strings y devuelve los coeficientes balanceados
+# Esta función ejecuta todo el proceso de balanceo
 def calcular_coeficientes(reactivos, productos):
 
-    # Primero construyo la matriz estequiometrica a partir de los compuestos
-    matriz_original, elementos, compuestos = construir_matriz(reactivos, productos)
+    # Construimos la matriz inicial
+    matriz_original, elementos, compuestos = construir_matriz(
+        reactivos,
+        productos
+    )
 
-    # Luego aplico Gauss-Jordan para reducir la matriz a su forma RREF
+    # Aplicamos Gauss-Jordan
     matriz_rref = gauss_jordan(matriz_original)
 
-    # Con la matriz reducida extraigo los coeficientes como valores flotantes
-    num_compuestos       = len(compuestos)
-    coeficientes_float   = extraer_coeficientes(matriz_rref, num_compuestos)
+    num_compuestos = len(compuestos)
 
-    # Finalmente los convierto a enteros para obtener los coeficientes finales de la ecuacion
-    coeficientes_enteros = racionalizar_coeficientes(coeficientes_float)
+    # Extraemos los coeficientes decimales
+    coeficientes_float = extraer_coeficientes(
+        matriz_rref,
+        num_compuestos
+    )
 
-    return coeficientes_enteros, compuestos, matriz_original, matriz_rref, elementos
+    # Convertimos los coeficientes a enteros
+    coeficientes_enteros = racionalizar_coeficientes(
+        coeficientes_float
+    )
+
+    # Devolvemos toda la información necesaria
+    return (
+        coeficientes_enteros,
+        compuestos,
+        matriz_original,
+        matriz_rref,
+        elementos
+    )
 
 
 
+# Esta función imprime la matriz de forma organizada
+def imprimir_matriz(
+    matriz,
+    elementos,
+    compuestos,
+    titulo="Matriz"
+):
 
-# Esta funcion es de utilidad para visualizar cualquier matriz de forma ordenada en la consola
-# Recibe la matriz, los elementos quimicos, los compuestos y un titulo opcional
-def imprimir_matriz(matriz, elementos, compuestos, titulo="Matriz"):
+    ancho_col = 10
 
-    # Defino el ancho de cada columna para que la tabla se vea alineada
-    ancho_col = 10   
-
-    # Imprimo el encabezado con el titulo de la matriz
     print(f"\n{'='*60}")
     print(f"  {titulo}")
     print(f"{'='*60}")
 
-    # Construyo y muestro la fila de encabezado con los nombres de los compuestos
+    # Creamos el encabezado con los compuestos
     encabezado = f"{'Elem':>6} |"
+
     for comp in compuestos:
         encabezado += f"{comp:>{ancho_col}}"
+
     print(encabezado)
 
-    # Imprimo una linea separadora entre el encabezado y los datos
     print(f"{'-'*6}-+{'-'*ancho_col*len(compuestos)}")
 
-    # Recorro cada fila de la matriz e imprimo el elemento y sus valores con formato de 3 decimales
+    # Recorremos cada fila de la matriz
     for i, elemento in enumerate(elementos):
+
         fila_str = f"{elemento:>6} |"
+
         for val in matriz[i]:
             fila_str += f"{val:>{ancho_col}.3f}"
+
         print(fila_str)
 
-    # Cierro la tabla con una linea final
     print(f"{'='*60}\n")
 
+    # Devolvemos la matriz mostrada
     return matriz
