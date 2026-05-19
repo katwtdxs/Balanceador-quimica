@@ -1,12 +1,15 @@
-#Función realizada por Karen González
+# Función realizada por Karen González
 
 """
-    Para expresar más información del balanceo tambien calculamos la masa molar de los compuestos
-    tanto de los reactivos y de los productos
+En este módulo calculamos la masa molar de los compuestos químicos.
+Para hacerlo usamos las masas molares de cada elemento de la tabla periódica
+y las multiplicamos por la cantidad de átomos presentes en el compuesto.
 """
+
 from traductor import conocer_cantidad_moles
-#Creamos un diccionario con los elementos y sus respectivas masas molares
-masa_molar_elementos ={
+
+# Creamos un diccionario con los elementos químicos y sus masas molares
+masa_molar_elementos = {
     "H": 1.008, "He": 4.003, "Li": 6.941, "Be": 9.012,
     "B": 10.811, "C": 12.011, "N": 14.007, "O": 15.999,
     "F": 18.998, "Ne": 20.180, "Na": 22.990, "Mg": 24.305,
@@ -33,14 +36,21 @@ masa_molar_elementos ={
     "Np": 237.000, "Pu": 244.000, "Am": 243.000, "Cm": 247.000,
     "Bk": 247.000, "Cf": 251.000, "Es": 252.000, "Fm": 257.000,
     "Md": 258.000, "No": 259.000, "Lr": 262.000
-    }
+}
 
-# IMPORT NECESARIO
-from traductor import conocer_cantidad_moles
- 
 def calculo_masa_molar(compuesto):
-    elementos = conocer_cantidad_moles(compuesto) #Con la función de calculo de moles de las sustancias sacamos esos valores
-    masa = 0 #Iniciamos un contador para la masa
-    for simbolo, cantidad in elementos.items(): #Se abre un bucle para recorrer los elementos del compuesto 
-        masa += masa_molar_elementos[simbolo] * cantidad #A la masa se le añade el valor de la masa del elemento multiplicado por los moles presentes
-    return round(masa, 3) # Se devuelve el valor de la masa redondeado con 3 decimales
+
+    # Usamos la función de contar átomos para saber cuántos elementos tiene el compuesto
+    elementos = conocer_cantidad_moles(compuesto)
+
+    # Creamos una variable donde iremos acumulando la masa molar total
+    masa = 0
+
+    # Recorremos cada elemento junto con la cantidad de veces que aparece
+    for simbolo, cantidad in elementos.items():
+
+        # Multiplicamos la masa del elemento por su cantidad y la sumamos al total
+        masa += masa_molar_elementos[simbolo] * cantidad
+
+    # Finalmente devolvemos la masa molar redondeada a 3 decimales
+    return round(masa, 3)
