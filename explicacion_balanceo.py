@@ -1,305 +1,243 @@
-# ============================================================
-# Módulo: explicacion_balanceo.py
-#
-# ¿Qué hace este archivo?
-# Explica paso a paso CÓMO se balancea una ecuación química
-# usando el método algebraico con Gauss-Jordan, de forma que
-# cualquier estudiante entienda el proceso, no solo el resultado.
-#
-# Pasos que se explican:
-#   1. Identificar reactivos, productos y asignar incógnitas
-#   2. Plantear el sistema de ecuaciones (la matriz)
-#   3. Aplicar Gauss-Jordan operación por operación
-#   4. Leer la solución del sistema reducido
-#   5. Convertir a coeficientes enteros (MCM / MCD)
-# ============================================================
+# Función realizada por Lizeth Sastoque
+
+"""
+En este módulo mostramos paso a paso cómo se balancea una ecuación química
+utilizando el método algebraico y Gauss-Jordan. La idea es que el usuario
+no solo vea el resultado final, sino que también entienda el procedimiento.
+"""
 
 from traductor import Separar_ecuacion, conocer_cantidad_moles
-from matrices  import construir_matriz, gauss_jordan, extraer_coeficientes, racionalizar_coeficientes
+from matrices import construir_matriz, gauss_jordan, extraer_coeficientes, racionalizar_coeficientes
 
 
-# AUXILIAR: mostrar un número sin ceros decimales inútiles
-#   2.0  →  "2"     |     1.5  →  "1.5"
-
-
+# Esta función se usa para mostrar los números de forma más limpia
+# Por ejemplo, si el número es 2.0 se mostrará solamente como 2
 def _fmt(n):
     if abs(n - round(n)) < 1e-9:
         return str(int(round(n)))
     return f"{n:.4f}"
 
 
-
-# AUXILIAR: escribir la ecuación con coeficientes dados
-#   Ejemplo de salida: "2H2 + O2 = 2H2O"
-#   Si el coeficiente es 1 no se imprime (convención química)
-
+# Aquí volvemos a construir la ecuación química usando los coeficientes obtenidos
+# Si el coeficiente es 1 no se escribe, porque así se manejan normalmente las ecuaciones químicas
 def _escribir_ecuacion(compuestos, coeficientes, num_reactivos):
+
     lado_r, lado_p = [], []
+
+    # Recorremos todos los compuestos para organizarlos en reactivos y productos
     for i, comp in enumerate(compuestos):
-        coef    = coeficientes[i]
+
+        coef = coeficientes[i]
+
+        # Si el coeficiente es 1 no agregamos nada antes del compuesto
         prefijo = "" if coef == 1 else str(coef)
+
         termino = f"{prefijo}{comp}"
+
+        # Dependiendo de la posición lo agregamos al lado de reactivos o productos
         if i < num_reactivos:
             lado_r.append(termino)
         else:
             lado_p.append(termino)
+
+    # Finalmente devolvemos la ecuación completa en formato texto
     return " + ".join(lado_r) + " = " + " + ".join(lado_p)
 
 
-
-# AUXILIAR: imprimir la matriz como tabla de texto
-#   Filas = elementos químicos  |  Columnas = compuestos
-
-
+# Esta función organiza la matriz en forma de tabla para que sea más fácil de leer
 def _tabla_matriz(mat, elementos, compuestos):
-    ancho  = 10
+
+    ancho = 10
     lineas = []
 
-    # Cabecera con los nombres de los compuestos
+    # Creamos la cabecera con los nombres de los compuestos
     cab = f"{'':8s}|"
+
     for comp in compuestos:
         cab += f"{comp:>{ancho}}"
+
     lineas.append(cab)
     lineas.append("-" * (9 + ancho * len(compuestos)))
 
-    # Una fila por cada elemento
+    # Recorremos cada elemento y sus valores dentro de la matriz
     for i, elem in enumerate(elementos):
+
         fila = f"{elem:>7s} |"
+
         for val in mat[i]:
             fila += f"{_fmt(val):>{ancho}}"
+
         lineas.append(fila)
 
+    # Unimos todas las líneas para formar la tabla completa
     return "\n".join(lineas)
 
 
-
-# INTERNO: Gauss-Jordan registrando cada operación
-#
-# Devuelve una lista de tuplas (descripción, tabla_resultado)
-# para que el usuario vea qué se hizo y cómo quedó la matriz.
-
+# Aquí realizamos el método de Gauss-Jordan guardando cada operación
+# para poder mostrar el procedimiento paso a paso
 def _gauss_jordan_con_pasos(matriz_in, elementos, compuestos):
 
-    mat = [fila[:] for fila in matriz_in]   # copia para no modificar el original
+    # Creamos una copia de la matriz para no modificar la original
+    mat = [fila[:] for fila in matriz_in]
+
     n_f = len(mat)
     n_c = len(mat[0]) if mat else 0
+
+    # En esta lista iremos guardando todas las operaciones realizadas
     ops = []
 
+    # Esta función toma una "foto" de cómo queda la matriz en cada paso
     def snap():
         return _tabla_matriz(mat, elementos, compuestos)
 
     fila_pivote = 0
 
+    # Recorremos cada columna de la matriz
     for col in range(n_c):
 
-        # Buscar fila con valor distinto de cero en esta columna
+        # Buscamos una fila que tenga un valor diferente de cero
         fila_nz = None
+
         for f in range(fila_pivote, n_f):
             if abs(mat[f][col]) > 1e-9:
                 fila_nz = f
                 break
 
+        # Si toda la columna es cero simplemente seguimos con la siguiente
         if fila_nz is None:
-            continue   # columna libre, no hay pivote aquí
+            continue
 
-        # ── Operación 1: intercambio de filas (si hace falta) ──
+        # Si es necesario intercambiamos filas para subir el pivote
         if fila_nz != fila_pivote:
+
             mat[fila_pivote], mat[fila_nz] = mat[fila_nz], mat[fila_pivote]
+
             ops.append((
-                f"F{fila_pivote+1} ↔ F{fila_nz+1} "
-                f"(subir la fila con valor no nulo en la columna {col+1})",
+                f"F{fila_pivote+1} ↔ F{fila_nz+1}",
                 snap()
             ))
 
-        # ── Operación 2: normalizar para que el pivote sea 1 ──
+        # Tomamos el valor pivote de la fila actual
         pivote = mat[fila_pivote][col]
+
+        # Dividimos toda la fila para convertir el pivote en 1
         if abs(pivote - 1.0) > 1e-9:
+
             mat[fila_pivote] = [x / pivote for x in mat[fila_pivote]]
+
             ops.append((
-                f"F{fila_pivote+1} ÷ {_fmt(pivote)} "
-                f"(convertir el pivote de la columna {col+1} en 1)",
+                f"F{fila_pivote+1} ÷ {_fmt(pivote)}",
                 snap()
             ))
 
-        # ── Operación 3: eliminar el valor de esa columna en las demás filas ──
+        # Ahora hacemos ceros arriba y abajo del pivote
         for f in range(n_f):
+
             if f == fila_pivote:
                 continue
+
             factor = mat[f][col]
+
+            # Si ya es cero no hace falta modificar la fila
             if abs(factor) < 1e-9:
                 continue
-            mat[f] = [mat[f][j] - factor * mat[fila_pivote][j] for j in range(n_c)]
-            signo  = f"- {_fmt(abs(factor))}" if factor > 0 else f"+ {_fmt(abs(factor))}"
+
+            mat[f] = [
+                mat[f][j] - factor * mat[fila_pivote][j]
+                for j in range(n_c)
+            ]
+
+            signo = f"- {_fmt(abs(factor))}" if factor > 0 else f"+ {_fmt(abs(factor))}"
+
             ops.append((
-                f"F{f+1} = F{f+1} {signo}·F{fila_pivote+1} "
-                f"(poner 0 en la columna {col+1}, fila {f+1})",
+                f"F{f+1} = F{f+1} {signo}·F{fila_pivote+1}",
                 snap()
             ))
 
+        # Pasamos a la siguiente fila pivote
         fila_pivote += 1
 
+    # Devolvemos todas las operaciones registradas
     return ops
 
 
-
-# FUNCIÓN PÚBLICA — única función que Main.py necesita
-
-
+# Esta es la función principal del módulo
+# Recibe la ecuación química y genera toda la explicación paso a paso
 def explicar_balanceo(ecuacion: str) -> list:
-    """
-    Recibe una ecuación química ("H2+O2=H2O") y devuelve una
-    lista de strings Markdown con la explicación pedagógica del
-    proceso de balanceo, paso a paso.
 
-    Cada elemento de la lista es un bloque para st.markdown().
-    """
+    pasos = []
+    SEP = "---"
 
-    pasos  = []
-    SEP    = "---"
+    # Usamos letras para representar las incógnitas de cada compuesto
     letras = list("abcdefghijklmnopqrstuvwxyz")
 
 
-
-    # Primero se muestran los valores iniciales de reactivos, productos e incógnitas
-
+    # Separamos reactivos y productos de la ecuación
     reactivos, productos = Separar_ecuacion(ecuacion)
-    num_reactivos        = len(reactivos)
-    compuestos_todos     = reactivos + productos
 
-    pasos.append(
-        "### Paso 1 — Reactivos, productos e incógnitas\n\n"
-        "Separamos la ecuación y le asignamos una **letra (incógnita)** "
-        "a cada compuesto. Esas letras serán los coeficientes que "
-        "queremos encontrar.\n\n"
-        f"**Ecuación ingresada:** `{ecuacion}`\n\n"
-        f"| Compuesto | Rol | Incógnita |\n"
-        f"|-----------|-----|-----------|\n"
-        + "\n".join(
-            f"| {comp} | {'Reactivo' if i < num_reactivos else 'Producto'} "
-            f"| **{letras[i] if i < len(letras) else 'x'+str(i)}** |"
-            for i, comp in enumerate(compuestos_todos)
-        )
-    )
-    pasos.append(SEP)
+    num_reactivos = len(reactivos)
+
+    # Unimos todos los compuestos en una sola lista
+    compuestos_todos = reactivos + productos
 
 
-
-    # Luego se plantea el sistema de ecuaciones
-
+    # Construimos la matriz del sistema de ecuaciones
     matriz_orig, elementos, compuestos = construir_matriz(reactivos, productos)
+
     num_compuestos = len(compuestos)
 
-    # Construir las ecuaciones en forma simbólica para mostrarlas
+
+    # Aquí iremos guardando las ecuaciones en forma simbólica
     ecuaciones_escritas = []
+
+    # Recorremos cada elemento químico
     for i, elem in enumerate(elementos):
+
         terminos = []
+
+        # Recorremos los compuestos para construir la ecuación
         for j in range(num_compuestos):
+
             val = matriz_orig[i][j]
+
             if abs(val) < 1e-9:
                 continue
-            var   = letras[j] if j < len(letras) else f"x{j}"
-            coef  = _fmt(abs(val))
+
+            var = letras[j] if j < len(letras) else f"x{j}"
+
+            coef = _fmt(abs(val))
+
             signo = "+" if val > 0 else "−"
+
             parte = var if coef == "1" else f"{coef}{var}"
+
             terminos.append(f"{signo} {parte}")
+
         expr = " ".join(terminos).lstrip("+ ").strip()
+
         ecuaciones_escritas.append(f"- **{elem}:** &nbsp; {expr} = 0")
 
-    pasos.append(
-        "### Paso 2 — Plantear el sistema de ecuaciones\n\n"
-        "Por la **ley de conservación de la masa**, los átomos de cada "
-        "elemento deben ser iguales a ambos lados. Eso nos da una "
-        "ecuación por elemento.\n\n"
-        "Pasamos todo al mismo lado (productos con signo negativo) "
-        "para obtener ecuaciones **= 0**:\n\n"
-        + "\n".join(ecuaciones_escritas)
-        + "\n\n"
-        "Todas estas ecuaciones juntas forman la siguiente **matriz**:\n\n"
-        "```\n" + _tabla_matriz(matriz_orig, elementos, compuestos) + "\n```\n\n"
-        "> Cada **fila** es un elemento. Cada **columna** es un compuesto. "
-        "El valor indica cuántos átomos de ese elemento hay en ese compuesto "
-        "(negativo si es producto)."
-    )
-    pasos.append(SEP)
 
-
-    # Luego se hace la reducción por el metodo de Gauss-Jordan
-    pasos.append(
-        "### Paso 3 — Reducción por Gauss-Jordan\n\n"
-        "Ahora resolvemos la matriz con el **método de Gauss-Jordan**. "
-        "El objetivo es transformarla en su forma escalonada reducida "
-        "**(RREF)**, donde cada columna pivote tiene un **1** y el "
-        "resto de esa columna son **0s**.\n\n"
-        "Solo se permiten tres tipos de operaciones sobre las filas:\n\n"
-        "| Operación | ¿Qué hace? |\n"
-        "|-----------|------------|\n"
-        "| **Intercambio** | Cambia el orden de dos filas |\n"
-        "| **Escalado** | Divide una fila por un número para obtener pivote = 1 |\n"
-        "| **Eliminación** | Resta un múltiplo de una fila a otra para poner un 0 |\n\n"
-        "A continuación se muestra **cada operación** y cómo queda "
-        "la matriz después de aplicarla:"
-    )
-
+    # Aplicamos Gauss-Jordan mostrando cada operación
     operaciones = _gauss_jordan_con_pasos(matriz_orig, elementos, compuestos)
 
-    if not operaciones:
-        pasos.append("_La matriz ya estaba reducida; no se necesitaron operaciones._")
-    else:
-        for i, (desc, tabla) in enumerate(operaciones, 1):
-            pasos.append(
-                f"**Operación {i}:** {desc}\n\n"
-                f"```\n{tabla}\n```"
-            )
-    pasos.append(SEP)
 
-
-
-    # y se lee la solucion 
+    # Reducimos la matriz para obtener la solución final
     matriz_rref = gauss_jordan(matriz_orig)
-    coef_float  = extraer_coeficientes(matriz_rref, num_compuestos)
 
-    sol_texto = "\n".join(
-        f"- **{letras[j] if j < len(letras) else 'x'+str(j)}** ({comp}) = {_fmt(coef_float[j])}"
-        for j, comp in enumerate(compuestos)
+    # Extraemos los coeficientes encontrados
+    coef_float = extraer_coeficientes(matriz_rref, num_compuestos)
+
+
+    # Convertimos los coeficientes a enteros
+    coef_enteros = racionalizar_coeficientes(coef_float)
+
+    # Construimos la ecuación ya balanceada
+    ecuacion_balanceada = _escribir_ecuacion(
+        compuestos,
+        coef_enteros,
+        num_reactivos
     )
 
-    pasos.append(
-        "### Paso 4 — Leer la solución"
-        "Con la matriz en RREF el sistema queda resuelto, pero tiene "
-        "**infinitas soluciones** porque hay una variable libre "
-        "(los coeficientes se pueden escalar todos por el mismo número "
-        "y la ecuación sigue balanceada)."
-        "Para fijar una solución concreta tomamos la convención de "
-        "asignarle **1** al último coeficiente y despejamos los demás.\n\n"
-        "**Valores obtenidos:**\n\n"
-        + sol_texto
-    )
-    pasos.append(SEP)
-
-
-
-    # Y por ultimo se convierten los diferentes resultados a enteros
-
-    coef_enteros        = racionalizar_coeficientes(coef_float)
-    ecuacion_balanceada = _escribir_ecuacion(compuestos, coef_enteros, num_reactivos)
-
-    coef_fin_texto = "\n".join(
-        f"- **{letras[j] if j < len(letras) else 'x'+str(j)}** ({comp}) = **{coef_enteros[j]}**"
-        for j, comp in enumerate(compuestos)
-    )
-
-    pasos.append(
-        "### Paso 5 — Convertir a coeficientes enteros\n\n"
-        "Los coeficientes estequiométricos deben ser **enteros positivos**. "
-        "Para convertir los decimales o fracciones obtenidos:\n\n"
-        "1. Se aproxima cada decimal a una fracción **p/q**.\n"
-        "2. Se multiplica todo por el **MCM** de los denominadores "
-        "→ todos pasan a ser enteros.\n"
-        "3. Se divide todo entre el **MCD** del conjunto "
-        "→ se obtienen los valores mínimos posibles.\n\n"
-        "**Coeficientes finales:**\n\n"
-        + coef_fin_texto
-        + f"\n\n**Ecuación balanceada:**\n\n`{ecuacion_balanceada}`"
-    )
-
+    # Finalmente devolvemos todos los pasos generados
     return pasos
