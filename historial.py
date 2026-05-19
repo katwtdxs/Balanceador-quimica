@@ -52,7 +52,7 @@ def mostrar_historial():
 
             # Si el archivo está vacío mostramos un mensaje
             if contenido.strip() == "":
-                print("\nNo hay historial todavía 🫠")
+                print("\nNo hay historial todavía ")
 
             # Si sí hay contenido, mostramos todo organizado
             else:
@@ -62,7 +62,7 @@ def mostrar_historial():
     except FileNotFoundError:
 
         # Si el archivo todavía no existe evitamos que el programa falle
-        print("\nNo hay historial todavía 🫠")
+        print("\nNo hay historial todavía ")
 
 
 # Esta función crea una copia del historial en otro archivo de texto
@@ -79,9 +79,9 @@ def exportar_txt():
             destino.write(contenido)
 
         # Mostramos un mensaje indicando que la exportación salió bien
-        print("Historial exportado correctamente 📄")
+        print("Historial exportado correctamente ")
 
     except FileNotFoundError:
 
         # Si no existe historial mostramos un mensaje al usuario
-        print("No hay datos para exportar 😅")
+        print("No hay datos para exportar ")
