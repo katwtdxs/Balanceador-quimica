@@ -17,8 +17,7 @@ EXPLICACIONES = {
         # Nombre completo que se mostrará al usuario
         "nombre_completo": "Reacción de Combustión",
 
-        # Ícono para hacer más visual la explicación
-        "icono": "🔥",
+    
 
         # Explicación sencilla de lo que ocurre en la reacción
         "descripcion": (
@@ -49,7 +48,7 @@ EXPLICACIONES = {
         # Información de las reacciones donde varias sustancias forman una sola
         "nombre_completo": "Reacción de Síntesis (o Combinación)",
 
-        "icono": "🔗",
+     
 
         "descripcion": (
             "Dos o más sustancias simples se unen para formar una sola más compleja. "
@@ -75,7 +74,7 @@ EXPLICACIONES = {
         # Este tipo de reacción ocurre cuando un compuesto se divide
         "nombre_completo": "Reacción de Descomposición",
 
-        "icono": "💥",
+     
 
         "descripcion": (
             "Una sola sustancia compleja se rompe en dos o más sustancias más simples. "
@@ -101,7 +100,6 @@ EXPLICACIONES = {
         # Aquí un elemento reemplaza a otro dentro de un compuesto
         "nombre_completo": "Reacción de Sustitución Simple (o Desplazamiento)",
 
-        "icono": "🔄",
 
         "descripcion": (
             "Un elemento libre 'empuja' a otro que estaba dentro de un compuesto "
@@ -128,7 +126,7 @@ EXPLICACIONES = {
         # En este caso dos compuestos intercambian sus componentes
         "nombre_completo": "Reacción de Doble Sustitución (o Metátesis)",
 
-        "icono": "🔀",
+
 
         "descripcion": (
             "Dos compuestos intercambian sus 'partes'. Es como si dos parejas "
@@ -154,7 +152,7 @@ EXPLICACIONES = {
         # Esta opción se usa cuando el programa no logra clasificar la reacción
         "nombre_completo": "Tipo de Reacción No Determinado",
 
-        "icono": "❓",
+     
 
         "descripcion": (
             "No fue posible clasificar esta reacción en las categorías básicas. "
