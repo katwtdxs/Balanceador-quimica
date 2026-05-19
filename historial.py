@@ -19,7 +19,7 @@ def guardar_en_historial(ecuacion, balanceada, tipo):
     # sin borrar lo que ya estaba guardado anteriormente
     with open(ARCHIVO_HISTORIAL, "a", encoding="utf-8") as archivo:
         # Guardamos la ecuación original ingresada
-        archivo.write("Ecuación: " + ecuacion + "\n")
+        archivo.write("Ecuacion: " + ecuacion + "\n")
         # Guardamos la ecuación ya balanceada
         archivo.write("Balanceada: " + balanceada + "\n")
         # También guardamos el tipo de reacción encontrado
@@ -42,18 +42,18 @@ def mostrar_historial():
             contenido = archivo.read()
             # Si el archivo está vacío mostramos un mensaje
             if contenido.strip() == "":
-                print("\nNo hay historial todavía ")
-            # Si sí hay contenido, mostramos todo organizado
+                print("\nNo hay historial todavia")
+            # Si sí hay contenido mostramos todo organizado
             else:
                 print("\n===== HISTORIAL =====")
                 print(contenido)
     except FileNotFoundError:
         # Si el archivo todavía no existe evitamos que el programa falle
-        print("\nNo hay historial todavía ")
+        print("\nNo hay historial todavia")
 
 
 # Esta función lee el historial y lo devuelve como texto
-# Si no hay archivo devuelve un string vacío
+# Si no existe el archivo devuelve un string vacío
 def _leer_historial():
     try:
         with open(ARCHIVO_HISTORIAL, "r", encoding="utf-8") as archivo:
@@ -63,7 +63,7 @@ def _leer_historial():
 
 
 # Esta función prepara el historial como bytes de texto plano
-# Streamlit lo recibe y lo manda al navegador como descarga
+# Streamlit lo recibe y lo manda al navegador como descarga directa
 def exportar_como_txt():
     contenido = _leer_historial()
     # Si no hay nada guardado devolvemos None para desactivar el botón
@@ -83,7 +83,7 @@ def exportar_como_pdf():
     pdf = FPDF()
     pdf.add_page()
 
-    # Título del reporte
+    # Titulo del reporte
     pdf.set_font("Helvetica", "B", 16)
     pdf.cell(
         0, 10,
@@ -92,7 +92,7 @@ def exportar_como_pdf():
     )
     pdf.ln(4)
 
-    # Fecha en que se exportó
+    # Fecha en que se exporto
     pdf.set_font("Helvetica", "", 10)
     pdf.cell(
         0, 8,
