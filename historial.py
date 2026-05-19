@@ -1,63 +1,87 @@
 # Función realizada por Lizeth Sastoque
-# Aquí guardamos todo en un archivo de texto sencillo
-# Es más fácil de manejar y no depende de formatos complejos
+
+"""
+En este módulo manejamos el historial de ecuaciones balanceadas.
+Aquí guardamos las operaciones realizadas por el usuario, mostramos
+el historial almacenado y también permitimos exportarlo a un archivo
+de texto para conservar los resultados.
+"""
 
 from datetime import datetime
 
+# Creamos el nombre del archivo donde se guardará el historial
 ARCHIVO_HISTORIAL = "historial.txt"
 
 
+# Esta función guarda cada ecuación procesada por el usuario
 def guardar_en_historial(ecuacion, balanceada, tipo):
-    # Esta función guarda cada operación que realiza el usuario
-    # Se abre el archivo en modo "append" para no borrar lo que ya hay, y se escribe la información con un formato legible
 
-
+    # Abrimos el archivo en modo append para agregar información
+    # sin borrar lo que ya estaba guardado anteriormente
     with open(ARCHIVO_HISTORIAL, "a") as archivo:
-        archivo.write("Ecuación: " + ecuacion + "\n")  # Se guarda la ecuación original
-        archivo.write("Balanceada: " + balanceada + "\n") # Se guarda la ecuación ya balanceada
-        archivo.write("Tipo: " + tipo + "\n") # Se guarda el tipo de reacción (síntesis, descomposición, etc.)
-        archivo.write("Fecha: " + datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "\n")  # Se guarda la fecha y hora en la que se hizo la operación
-        archivo.write("-" * 40 + "\n")  # separador para que no se mezcle todo
+
+        # Guardamos la ecuación original ingresada
+        archivo.write("Ecuación: " + ecuacion + "\n")
+
+        # Guardamos la ecuación ya balanceada
+        archivo.write("Balanceada: " + balanceada + "\n")
+
+        # También guardamos el tipo de reacción encontrado
+        archivo.write("Tipo: " + tipo + "\n")
+
+        # Guardamos la fecha y hora en la que se realizó la operación
+        archivo.write(
+            "Fecha: " +
+            datetime.now().strftime("%Y-%m-%d %H:%M:%S") +
+            "\n"
+        )
+
+        # Agregamos una línea divisoria para organizar mejor el historial
+        archivo.write("-" * 40 + "\n")
 
 
+# Esta función se encarga de leer y mostrar el historial completo
 def mostrar_historial():
-    # Esta función lee el archivo y muestra todo el historial guardado
-    
+
     try:
+
+        # Abrimos el archivo en modo lectura
         with open(ARCHIVO_HISTORIAL, "r") as archivo:
+
             contenido = archivo.read()
-            
 
-
-            # Si el archivo está vació, se muestra un mensaje 
+            # Si el archivo está vacío mostramos un mensaje
             if contenido.strip() == "":
-                print("\nNo hay historial todavía ")
-           
-           # Si sí hay datos, se muestran organizados
+                print("\nNo hay historial todavía 🫠")
+
+            # Si sí hay contenido, mostramos todo organizado
             else:
                 print("\n===== HISTORIAL =====")
                 print(contenido)
-                
+
     except FileNotFoundError:
-        # Si el archivo no existe aún, se evita que el programa falle
-        print("\nNo hay historial todavía ")
+
+        # Si el archivo todavía no existe evitamos que el programa falle
+        print("\nNo hay historial todavía 🫠")
 
 
+# Esta función crea una copia del historial en otro archivo de texto
 def exportar_txt():
-    # Esta función crea una copia del historial con otro nombre
 
-    # Es decir "Exporta# el contenido a un nuevo archivo"
-    
     try:
-        # Se lee el archivo original y se guarda su contenido
+
+        # Leemos todo el contenido del historial original
         with open(ARCHIVO_HISTORIAL, "r") as origen:
             contenido = origen.read()
-        # Se crea un nuevo archivo y se escribe el contenido del historial en él
+
+        # Creamos un nuevo archivo donde se copiará el historial
         with open("resultados.txt", "w") as destino:
             destino.write(contenido)
 
-        print("Historial exportado correctamente ")
+        # Mostramos un mensaje indicando que la exportación salió bien
+        print("Historial exportado correctamente 📄")
 
     except FileNotFoundError:
-        # Su no hay historial, se muestra un mensaje indicando que no hay datos para exportar
-        print("No hay datos para exportar ")
+
+        # Si no existe historial mostramos un mensaje al usuario
+        print("No hay datos para exportar 😅")
