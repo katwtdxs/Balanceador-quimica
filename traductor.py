@@ -1,97 +1,147 @@
-#Función realizada por Karen González
-"""
-    Para poder iniciar a asignarle un coeficiente a cada compuesto es necesalio convertir
-    el string que se ingresa en el input en información que se pueda manejar en el calculo
-"""
+# Función realizada por Karen González
+#
+# Este módulo se encarga de interpretar la ecuación química
+# que escribe el usuario para convertirla en información
+# que el programa pueda utilizar en los cálculos.
+#
+# Aquí se separan los reactivos y productos,
+# y también se cuentan los átomos de cada elemento
+# dentro de los compuestos químicos.
 
-## Función :
 
+# Esta función separa la ecuación en reactivos y productos
 def Separar_ecuacion(cadena):
-    """
-        Esta función sirve para separar los reactivos de productos teniendo en cuenta que en el 
-        imput (cadena) se separa por el simbolo "=" nos devuelve en el return las listas de compuestos 
-        de reactivos y productos, los cuales se separan por el simbolo "+"
-    """
-    cadena=cadena.replace(" ", "") #Eliminamos posibles espacios
-    lista_compuestos= cadena.split("=") 
-    reactivos= lista_compuestos[0].split("+") #El elemento [0] son los reactivos
-    productos= lista_compuestos[1].split("+") #El elemento [1] son los productos
 
-    return reactivos, productos #Aquí nos devuelve dos listas
+    # Primero eliminamos los espacios que pueda escribir el usuario
+    cadena = cadena.replace(" ", "")
+
+    # Separamos la ecuación usando el símbolo "="
+    lista_compuestos = cadena.split("=")
+
+    # A la izquierda del "=" quedan los reactivos
+    reactivos = lista_compuestos[0].split("+")
+
+    # A la derecha del "=" quedan los productos
+    productos = lista_compuestos[1].split("+")
+
+    # Finalmente devolvemos ambas listas
+    return reactivos, productos
 
 
+# Esta función cuenta la cantidad de átomos
+# que tiene cada elemento dentro de un compuesto
 def conocer_cantidad_moles(sustancia):
-    """
-        Esta función nos permite contar la cantidad de moles que tiene un compuesto o elemento en la reacción
-    """
-    dict_elementos ={} #Creamos un diccionario donde se van a guardar los valores de el elemento y el numero de moles que tiene
-    dict_temporal_parentesis ={} #Este es un diccionario temporal para los elementos dentro de un parentesis
+
+    # Aquí guardaremos el resultado final
+    dict_elementos = {}
+
+    # Este diccionario temporal se usa cuando aparecen paréntesis
+    dict_temporal_parentesis = {}
+
+    # Esta variable ayuda a saber si estamos
+    # dentro o fuera de un paréntesis
     parentesis = "Fuera"
-    i = 0 #Iniciamos un contador poder recorrer el string en el while
 
-    while i < len(sustancia): 
-        letra = sustancia[i] #La letra va a ser la del index 0 hasta la de index de la cantidad de letras que
+    # Contador para recorrer el string carácter por carácter
+    i = 0
 
-        if letra == "(": #Esta condición se utiliza cuando el compuesto tiene parentesis por ejemplo Fe2(SO4)3
-            #Cuando entra en un parentesis el valor adquiere una condicion que incica que esta dentro del parenteis
-            parentesis = "Dentro" 
-            dict_temporal_parentesis = {} #Se actualiza el diccionario de parentesis
-            i += 1 #Actualiza el contador
-            
+    while i < len(sustancia):
+
+        # Tomamos la letra actual
+        letra = sustancia[i]
+
+        # Si encontramos un paréntesis de apertura
+        # significa que empieza un grupo especial
+        if letra == "(":
+
+            parentesis = "Dentro"
+
+            # Reiniciamos el diccionario temporal
+            dict_temporal_parentesis = {}
+
+            i += 1
+
+        # Si encontramos el cierre del paréntesis
         elif letra == ")":
-            #Cuando sale del parentesis el valor adquiere una condicion que indica que esta fuera del parenteis
+
             parentesis = "Fuera"
             i += 1
-            
-            # Al salir del parentesis debe haber un numero que multiplica el valor en el interior
-            num = "" #Iniciamos un contador para ese numero
+
+            # Después del paréntesis puede venir
+            # un número multiplicador
+            num = ""
+
             while i < len(sustancia) and sustancia[i].isdigit():
-                 #Este bucle nos agrega el caracter en el index [i]
+
                 num += sustancia[i]
-                i += 1 #Actualiza el contador
+                i += 1
+
+            # Si no aparece número, el multiplicador vale 1
             if num:
-              multiplicador = int(num)  #Pasa ese caracter a un valor numerico
+                multiplicador = int(num)
             else:
-              multiplicador= 1
+                multiplicador = 1
 
-            for elemento, cantidad in dict_temporal_parentesis.items(): #Aqui nos entrega los clave-valor del diccionario de los parentesis
+            # Multiplicamos todos los elementos que estaban
+            # dentro del paréntesis
+            for elemento, cantidad in dict_temporal_parentesis.items():
 
-                #Se actualizan los valores en el diccionario principal multiplicando el coeficiente del parentesis
-                dict_elementos[elemento] = dict_elementos.get(elemento, 0) + cantidad * multiplicador 
+                dict_elementos[elemento] = (
+                    dict_elementos.get(elemento, 0)
+                    + cantidad * multiplicador
+                )
 
-            """
-                Estos condicionales son los que determinan los elementos existentes en base a su estructura de simbolo: 
-                Letra mayúscula o Letra mayúscula + Letra minúscula
-            """
-        elif letra.isupper():#La función .isupper() determina si es Mayúscula
-            elemento = letra #Se actualiza el valor de el elemento
-            i += 1 #Pasamos a la siguiente letra
-            
-            while i < len(sustancia) and sustancia[i].islower(): #Verificamos si la siguiente letra es minúscula ".islower()"
-                elemento += sustancia[i] #Si lo es, se añade al elemento
-                i += 1 #Pasa al siguiente carácter
-            num = "" #Se crea un contador para el numero que acompaña al elemento
-            while i < len(sustancia) and sustancia[i].isdigit(): #Verificamos sí el siguiemte valor es in numero ".isdigit"
-                num += sustancia[i] #Se agrega ese numero al valor
-                i += 1 #Pasa al siguiente carácter
+        # Aquí identificamos los símbolos químicos
+        # que siempre empiezan con mayúscula
+        elif letra.isupper():
+
+            elemento = letra
+            i += 1
+
+            # Si la siguiente letra es minúscula,
+            # también pertenece al símbolo
+            while i < len(sustancia) and sustancia[i].islower():
+
+                elemento += sustancia[i]
+                i += 1
+
+            # Ahora buscamos si el elemento tiene subíndice
+            num = ""
+
+            while i < len(sustancia) and sustancia[i].isdigit():
+
+                num += sustancia[i]
+                i += 1
+
+            # Si no tiene número, significa que vale 1
             if num:
-                cantidad = int(num)  #Pasa ese caracter a un valor numerico
+                cantidad = int(num)
             else:
-                cantidad= 1
+                cantidad = 1
 
+            # Dependiendo de si estamos dentro o fuera
+            # del paréntesis, guardamos el elemento
+            # en el diccionario correspondiente
+            if parentesis == "Dentro":
 
-        #Estos condicionales indican que se hace con los valores en el diccionario si estan fuera o dentro del paréntesis
-            if parentesis=="Dentro": #Dentro del paréntesis
-                #Guarda el elemento en el diccionario temporal (el de adentro del paréntesis)
-                dict_temporal_parentesis[elemento] = dict_temporal_parentesis.get(elemento, 0) + cantidad
-            elif parentesis=="Fuera": #Fuera del paréntesis
-                #Guarda el elemento en el diccionario principal                    
-                dict_elementos[elemento] = dict_elementos.get(elemento, 0) + cantidad
-                
-        else: #Si no entra a ninguna condicion se actualiza para evitar un bucle infinito
-            i+=1
-    return dict_elementos #Devuelve un diccionario con los moles de cada elemento
+                dict_temporal_parentesis[elemento] = (
+                    dict_temporal_parentesis.get(elemento, 0)
+                    + cantidad
+                )
 
+            elif parentesis == "Fuera":
 
+                dict_elementos[elemento] = (
+                    dict_elementos.get(elemento, 0)
+                    + cantidad
+                )
 
-        
+        # Si aparece otro carácter simplemente avanzamos
+        # para evitar ciclos infinitos
+        else:
+
+            i += 1
+
+    # Devolvemos un diccionario con cada elemento
+    # y la cantidad de átomos encontrados
+    return dict_elementos
